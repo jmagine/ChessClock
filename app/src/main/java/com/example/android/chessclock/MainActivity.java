@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
+import android.content.Intent;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
   final int MIN_PER_HOUR = 60;
   final int SEC_PER_MIN = 60;
 
+  long[] initTimes;
   long topTime;
   long bottomTime;
   int turn = PAUSE;
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
   Button topButton;
   Button bottomButton;
   Button pauseButton;
+  Button editButton;
+  Button settingsButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,32 +48,45 @@ public class MainActivity extends AppCompatActivity {
     topButton = (Button) findViewById(R.id.topButton);
     bottomButton = (Button) findViewById(R.id.bottomButton);
     pauseButton = (Button) findViewById(R.id.pauseButton);
-    topTime = 0 * HOUR + 1 * MINUTE;
-    bottomTime = 0 * HOUR + 1 * SECOND;
+    editButton = (Button) findViewById(R.id.editButton);
+    settingsButton = (Button) findViewById(R.id.settingsButton);
 
     //TODO figure out all the intent stuff
     //Need intent for setting time control
-    //final Bundle bundle1 = getIntent().getExtras();
 
-    findViewById(R.id.topButton).setOnTouchListener(new View.OnTouchListener() {
+    Bundle bundle = getIntent().getExtras();
+
+    if(bundle != null) {
+      initTimes = bundle.getLongArray("times");
+      if(initTimes != null) {
+        topTime = initTimes[0];
+        bottomTime = initTimes[1];
+      }
+    }
+    else {
+      topTime = 0 * HOUR + 1 * MINUTE;
+      bottomTime = 0 * HOUR + 1 * SECOND;
+    }
+
+    topButton.setOnTouchListener(new View.OnTouchListener() {
       @Override
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
             if(bottomTime > 0) {
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFF00CCCC);
+              bottomButton.setBackgroundColor(0xFF00CCCC);
             }
             else
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFFFF4444);
+              bottomButton.setBackgroundColor(0xFFFF4444);
 
             if(topTime > 0) {
-              findViewById(R.id.topButton).setBackgroundColor(0xFF222222);
+              topButton.setBackgroundColor(0xFF222222);
               //((TextView) findViewById(R.id.topTime)).setText(createTimeString(topTime, 0, true, false));
             }
             else
-              findViewById(R.id.topButton).setBackgroundColor(0xFFFF4444);
+              topButton.setBackgroundColor(0xFFFF4444);
 
-            findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
+            pauseButton.setVisibility(View.VISIBLE);
             turn = PLAYER_BOT;
             break;
         }
@@ -76,24 +94,24 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    findViewById(R.id.bottomButton).setOnTouchListener(new View.OnTouchListener() {
+    bottomButton.setOnTouchListener(new View.OnTouchListener() {
       @Override
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
             if(bottomTime > 0) {
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFF222222);
+              bottomButton.setBackgroundColor(0xFF222222);
               //((TextView) findViewById(R.id.bottomTime)).setText(createTimeString(bottomTime, 0, true, false));
             }
             else
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFFFF4444);
+              bottomButton.setBackgroundColor(0xFFFF4444);
 
             if(topTime > 0) {
-              findViewById(R.id.topButton).setBackgroundColor(0xFF00CCCC);
+              topButton.setBackgroundColor(0xFF00CCCC);
             }
             else
-              findViewById(R.id.topButton).setBackgroundColor(0xFFFF4444);
-            findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
+              topButton.setBackgroundColor(0xFFFF4444);
+            pauseButton.setVisibility(View.VISIBLE);
             turn = PLAYER_TOP;
             break;
         }
@@ -101,26 +119,26 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    findViewById(R.id.pauseButton).setOnTouchListener(new View.OnTouchListener() {
+    pauseButton.setOnTouchListener(new View.OnTouchListener() {
       @Override
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
             if(bottomTime > 0) {
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFF222222);
+              bottomButton.setBackgroundColor(0xFF222222);
               //((TextView) findViewById(R.id.bottomTime)).setText(createTimeString(bottomTime, 0, true, false));
             }
             else
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFFFF4444);
+              bottomButton.setBackgroundColor(0xFFFF4444);
 
             if(topTime > 0) {
-              findViewById(R.id.topButton).setBackgroundColor(0xFF222222);
+              topButton.setBackgroundColor(0xFF222222);
               //((TextView) findViewById(R.id.topTime)).setText(createTimeString(topTime, 0, true, false));
             }
             else
-              findViewById(R.id.topButton).setBackgroundColor(0xFFFF4444);
+              topButton.setBackgroundColor(0xFFFF4444);
 
-            findViewById(R.id.pauseButton).setVisibility(View.INVISIBLE);
+            pauseButton.setVisibility(View.INVISIBLE);
             turn = PAUSE;
             break;
         }
@@ -128,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    findViewById(R.id.editButton).setOnTouchListener(new View.OnTouchListener() {
+    editButton.setOnTouchListener(new View.OnTouchListener() {
       @Override
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
@@ -139,6 +157,21 @@ public class MainActivity extends AppCompatActivity {
         return false;
       }
     });
+
+    settingsButton.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+          case MotionEvent.ACTION_DOWN:
+            Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
+            startActivityForResult(myIntent, 0);
+            break;
+        }
+        return false;
+      }
+    });
+
+
 
     Timer t = new Timer();
     t.scheduleAtFixedRate(new TimerTask() {

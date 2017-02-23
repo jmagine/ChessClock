@@ -16,30 +16,55 @@ public class MainActivity extends AppCompatActivity {
   final int PLAYER_TOP = 1;
   final int PLAYER_BOT = 2;
 
+  final long HOUR = 3600000;
+  final long MINUTE = 60000;
+  final long SECOND = 1000;
+
+  final int MIN_PER_HOUR = 60;
+  final int SEC_PER_MIN = 60;
+
   long topTime;
   long bottomTime;
   int turn = PAUSE;
+
+  TextView topTimeTV;
+  TextView bottomTimeTV;
+  Button topButton;
+  Button bottomButton;
+  Button pauseButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    topTime = 60000;
-    bottomTime = 60000;
+    topTimeTV = (TextView) findViewById(R.id.topTime);
+    bottomTimeTV = (TextView) findViewById(R.id.bottomTime);
+    topButton = (Button) findViewById(R.id.topButton);
+    bottomButton = (Button) findViewById(R.id.bottomButton);
+    pauseButton = (Button) findViewById(R.id.pauseButton);
+    topTime = 0 * HOUR + 1 * MINUTE;
+    bottomTime = 0 * HOUR + 1 * SECOND;
+
+    //TODO figure out all the intent stuff
+    //Need intent for setting time control
+    //final Bundle bundle1 = getIntent().getExtras();
 
     findViewById(R.id.topButton).setOnTouchListener(new View.OnTouchListener() {
       @Override
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
-            if(bottomTime > 0)
-              findViewById(R.id.bottomButton).setBackgroundColor(0xFF00FFFF);
+            if(bottomTime > 0) {
+              findViewById(R.id.bottomButton).setBackgroundColor(0xFF00CCCC);
+            }
             else
               findViewById(R.id.bottomButton).setBackgroundColor(0xFFFF4444);
 
-            if(topTime > 0)
-              findViewById(R.id.topButton).setBackgroundColor(0x222222CC);
+            if(topTime > 0) {
+              findViewById(R.id.topButton).setBackgroundColor(0xFF222222);
+              //((TextView) findViewById(R.id.topTime)).setText(createTimeString(topTime, 0, true, false));
+            }
             else
               findViewById(R.id.topButton).setBackgroundColor(0xFFFF4444);
 
@@ -56,13 +81,16 @@ public class MainActivity extends AppCompatActivity {
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
-            if(bottomTime > 0)
-              findViewById(R.id.bottomButton).setBackgroundColor(0x222222CC);
+            if(bottomTime > 0) {
+              findViewById(R.id.bottomButton).setBackgroundColor(0xFF222222);
+              //((TextView) findViewById(R.id.bottomTime)).setText(createTimeString(bottomTime, 0, true, false));
+            }
             else
               findViewById(R.id.bottomButton).setBackgroundColor(0xFFFF4444);
 
-            if(topTime > 0)
-              findViewById(R.id.topButton).setBackgroundColor(0xFF00FFFF);
+            if(topTime > 0) {
+              findViewById(R.id.topButton).setBackgroundColor(0xFF00CCCC);
+            }
             else
               findViewById(R.id.topButton).setBackgroundColor(0xFFFF4444);
             findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
@@ -78,13 +106,17 @@ public class MainActivity extends AppCompatActivity {
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
-            if(bottomTime > 0)
-              findViewById(R.id.bottomButton).setBackgroundColor(0x222222CC);
+            if(bottomTime > 0) {
+              findViewById(R.id.bottomButton).setBackgroundColor(0xFF222222);
+              //((TextView) findViewById(R.id.bottomTime)).setText(createTimeString(bottomTime, 0, true, false));
+            }
             else
               findViewById(R.id.bottomButton).setBackgroundColor(0xFFFF4444);
 
-            if(topTime > 0)
-              findViewById(R.id.topButton).setBackgroundColor(0x222222CC);
+            if(topTime > 0) {
+              findViewById(R.id.topButton).setBackgroundColor(0xFF222222);
+              //((TextView) findViewById(R.id.topTime)).setText(createTimeString(topTime, 0, true, false));
+            }
             else
               findViewById(R.id.topButton).setBackgroundColor(0xFFFF4444);
 
@@ -130,46 +162,88 @@ public class MainActivity extends AppCompatActivity {
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        String timeString = "";
-        Button timeButton;
-        TextView timeText;
-        long time;
-        if(turn == PLAYER_TOP) {
-          timeButton = (Button) findViewById(R.id.topButton);
-          timeText = (TextView) findViewById(R.id.topTime);
-          time = topTime;
-        }
-        else if(turn == PLAYER_BOT) {
-          timeButton = (Button) findViewById(R.id.bottomButton);
-          timeText = (TextView) findViewById(R.id.bottomTime);
-          time = bottomTime;
-        }
+        if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
+          topTimeTV.setText(createTimeString(topTime, 0, true, false));
         else
-          return;
+          topTimeTV.setText(createTimeString(topTime, 0, false, false));
 
-        //TODO append times to a string instead to make them more dynamic
-        if(time > 0) {
+        if(topTime <= 0)
+          topButton.setBackgroundColor(0xFFFF4444);
 
-          if(time / 60000 < 10)
-            timeString = timeString.concat("0" + time / 60000);
-          else
-            timeString = timeString.concat("" + time / 60000);
-          timeString = timeString.concat(":");
+        if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
+          bottomTimeTV.setText(createTimeString(bottomTime, 0, true, false));
+        else
+          bottomTimeTV.setText(createTimeString(bottomTime, 0, false, false));
 
-          if((time / 1000) % 60 < 10)
-            timeString = timeString.concat("0" + (time / 1000) % 60);
-          else
-            timeString = timeString.concat("" + (time / 1000) % 60);
-
-          timeText.setText(timeString);
-
-          //timeText.setText("" + time);
-        }
-        else {
-          timeText.setText("00:00");
-          timeButton.setBackgroundColor(0xFFFF4444);
-        }
+        if(bottomTime <= 0)
+          bottomButton.setBackgroundColor(0xFFFF4444);
       }
     });
+  }
+
+  public String createTimeString(long time, int displayMode, boolean colon, boolean leadingZero) {
+    String timeString = "";
+    //Process HH:MM format times
+    if(time >= HOUR) {
+      if(time / HOUR < 10 && leadingZero)
+        timeString = timeString.concat("0" + time / HOUR);
+      else
+        timeString = timeString.concat("" + time / HOUR);
+
+      if(colon)
+        timeString = timeString.concat(":");
+      else
+        timeString = timeString.concat(" ");
+
+      if((time / MINUTE) % MIN_PER_HOUR < 10)
+        timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
+      else
+        timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
+    }
+
+    //Process MM:SS format times
+    else if(time >= MINUTE) {
+      if(time / MINUTE < 10 && leadingZero)
+        timeString = timeString.concat("0" + time / MINUTE);
+      else
+        timeString = timeString.concat("" + time / MINUTE);
+
+      if(colon)
+        timeString = timeString.concat(":");
+      else
+        timeString = timeString.concat(" ");
+
+      if((time / SECOND) % SEC_PER_MIN < 10)
+        timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+      else
+        timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+    }
+
+    //Process < 1 minute times
+    else if(time > 0) {
+      if(time / MINUTE < 10 && leadingZero)
+        timeString = timeString.concat("0" + time / MINUTE);
+      else
+        timeString = timeString.concat("" + time / MINUTE);
+
+      if(colon)
+        timeString = timeString.concat(":");
+      else
+        timeString = timeString.concat(" ");
+
+      if((time / SECOND) % SEC_PER_MIN < 10)
+        timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+      else
+        timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+    }
+
+    //Process 0 or negative times
+    else {
+      if(leadingZero)
+        timeString = "00:00";
+      else
+        timeString = "0:00";
+    }
+    return timeString;
   }
 }

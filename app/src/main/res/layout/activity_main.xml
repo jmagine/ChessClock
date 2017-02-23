@@ -31,19 +31,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#222"
-        android:alpha="0.75"/>
+        android:alpha="1"/>
 
       <TextView
         android:id="@+id/topTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:rotation="-90"
         android:clickable="false"
         android:text="01:00"
         android:textSize="60sp"
-        android:textColor="#fff"/>
+        android:textColor="#fff"
+        android:elevation="10dp"/>
 
     </RelativeLayout>
 
@@ -83,19 +84,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#222"
-        android:alpha="0.75"/>
+        android:alpha="1"/>
 
       <TextView
         android:id="@+id/bottomTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:rotation="-90"
         android:clickable="false"
         android:text="01:00"
         android:textSize="60sp"
-        android:textColor="#fff"/>
+        android:textColor="#fff"
+        android:elevation="10dp"/>
 
     </RelativeLayout>
 

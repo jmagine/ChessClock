@@ -8,6 +8,15 @@
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
+  <style name="AlertDialogCustomTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <!-- Used for the buttons -->
+    <item name="colorAccent">#00CCFF</item>
+    <!-- Used for the title and text -->
+    <item name="android:textColorPrimary">#FFFFFF</item>
+    <!-- Used for the background -->
+    <item name="android:background">#111111</item>
+  </style>
+
   <style name="PreferencesTheme">
     <item name="android:background">#FF000000</item>
   </style>

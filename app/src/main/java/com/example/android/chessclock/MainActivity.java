@@ -2,6 +2,7 @@ package com.example.android.chessclock;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
@@ -11,7 +12,7 @@ import android.content.Intent;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
   Button[] editTimeButtons;
   Button topButton;
   Button bottomButton;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     editTimeButtons[6] = (Button) findViewById(R.id.editTimeBottom1Down);
     editTimeButtons[7] = (Button) findViewById(R.id.editTimeBottom2Down);
 
+    /*
     topButton.setOnClickListener(this);
     bottomButton.setOnClickListener(this);
     editButton.setOnClickListener(this);
@@ -75,9 +77,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     for(int i = 0; i < 8; i++) {
       editTimeButtons[i].setOnClickListener(this);
     }
+    */
 
-    editMode = false;
-    setMode(MODE_PLAY);
+    topButton.setOnTouchListener(this);
+    bottomButton.setOnTouchListener(this);
+    editButton.setOnTouchListener(this);
+    pauseButton.setOnTouchListener(this);
+    settingsButton.setOnTouchListener(this);
+
+    for(int i = 0; i < 8; i++) {
+      editTimeButtons[i].setOnTouchListener(this);
+    }
 
     //TODO figure out all the intent stuff
     //Need intent for setting time control
@@ -93,8 +103,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     else {
       topTime    = 0 * HOUR + 1 * MINUTE + 0 * SECOND;
-      bottomTime = 0 * HOUR + 1 * SECOND + 0 * SECOND;
+      bottomTime = 0 * HOUR + 2 * SECOND + 0 * SECOND;
     }
+
+    editMode = false;
+    setMode(MODE_PAUSE);
 
     //update times each 10 ms
     Timer t = new Timer();
@@ -114,7 +127,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   }
 
   @Override
-  public void onClick(View v) {
+  public boolean onTouch(View v, MotionEvent m) {
+    if(m.getAction() != MotionEvent.ACTION_DOWN)
+      return false;
 
     switch (v.getId()) {
       case R.id.topButton:
@@ -162,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       default:
         break;
     }
-
+    return false;
   }
 
   public void updateTimes() {
@@ -283,11 +298,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     if(mode == MODE_EDIT_TIME) {
       turn = 0;
+      editButton.setText("Done");
       for(int i = 0; i < 8; i++) {
         editTimeButtons[i].setVisibility(View.VISIBLE);
       }
     }
     else {
+      editButton.setText("Edit Time");
       for(int i = 0; i < 8; i++) {
         editTimeButtons[i].setVisibility(View.INVISIBLE);
       }

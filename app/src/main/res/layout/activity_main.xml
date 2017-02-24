@@ -97,19 +97,22 @@
         android:id="@+id/editButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:text="Edit Time"/>
 
       <Button
         android:id="@+id/pauseButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:text="Pause"/>
 
       <Button
         android:id="@+id/settingsButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:text="Settings"/>
 
     </LinearLayout>
 

@@ -1,9 +1,7 @@
 package com.example.android.chessclock;
 
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
@@ -13,27 +11,16 @@ import android.content.Intent;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
-  TextView topTimeTV;
-  TextView bottomTimeTV;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+  Button[] editTimeButtons;
   Button topButton;
   Button bottomButton;
   Button pauseButton;
   Button editButton;
   Button settingsButton;
+  TextView topTimeTV;
+  TextView bottomTimeTV;
 
-  Button[] editTimeButtons;
-  /*
-  Button editTimeTop1Up;
-  Button editTimeTop2Up;
-  Button editTimeBottom1Up;
-  Button editTimeBottom2Up;
-
-  Button editTimeTop1Down;
-  Button editTimeTop2Down;
-  Button editTimeBottom1Down;
-  Button editTimeBottom2Down;
-  */
   final long HOUR = 3600000;
   final long MINUTE = 60000;
   final long SECOND = 1000;
@@ -46,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
   final int SEC_PER_MIN = 60;
 
   final int MODE_PLAY = 0;
-  final int MODE_EDIT_TIME = 1;
+  final int MODE_PAUSE = 1;
+  final int MODE_EDIT_TIME = 2;
 
   long[] initTimes;
   long topTime;
@@ -60,45 +48,35 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    //initialize all the ui elements
+    editTimeButtons = new Button[8];
     topTimeTV = (TextView) findViewById(R.id.topTime);
     bottomTimeTV = (TextView) findViewById(R.id.bottomTime);
     topButton = (Button) findViewById(R.id.topButton);
     bottomButton = (Button) findViewById(R.id.bottomButton);
-
     pauseButton = (Button) findViewById(R.id.pauseButton);
     editButton = (Button) findViewById(R.id.editButton);
     settingsButton = (Button) findViewById(R.id.settingsButton);
-    /*
-    editTimeTop1Up = (Button) findViewById(R.id.editTimeTop1Up);
-    editTimeTop2Up = (Button) findViewById(R.id.editTimeTop2Up);
-    editTimeBottom1Up = (Button) findViewById(R.id.editTimeBottom1Up);
-    editTimeBottom2Up = (Button) findViewById(R.id.editTimeBottom2Up);
-
-    editTimeTop1Down = (Button) findViewById(R.id.editTimeTop1Down);
-    editTimeTop2Down = (Button) findViewById(R.id.editTimeTop2Down);
-    editTimeBottom1Down = (Button) findViewById(R.id.editTimeBottom1Down);
-    editTimeBottom2Down = (Button) findViewById(R.id.editTimeBottom2Down);
-
-    editTimeTop1Up.setVisibility(View.INVISIBLE);
-    */
-    editTimeButtons = new Button[8];
-
     editTimeButtons[0] = (Button) findViewById(R.id.editTimeTop1Up);
     editTimeButtons[1] = (Button) findViewById(R.id.editTimeTop2Up);
     editTimeButtons[2] = (Button) findViewById(R.id.editTimeBottom1Up);
     editTimeButtons[3] = (Button) findViewById(R.id.editTimeBottom2Up);
-
     editTimeButtons[4] = (Button) findViewById(R.id.editTimeTop1Down);
     editTimeButtons[5] = (Button) findViewById(R.id.editTimeTop2Down);
     editTimeButtons[6] = (Button) findViewById(R.id.editTimeBottom1Down);
     editTimeButtons[7] = (Button) findViewById(R.id.editTimeBottom2Down);
 
-    editMode = false;
+    topButton.setOnClickListener(this);
+    bottomButton.setOnClickListener(this);
+    editButton.setOnClickListener(this);
+    pauseButton.setOnClickListener(this);
+    settingsButton.setOnClickListener(this);
 
     for(int i = 0; i < 8; i++) {
-      editTimeButtons[i].setVisibility(View.INVISIBLE);
+      editTimeButtons[i].setOnClickListener(this);
     }
 
+    editMode = false;
     setMode(MODE_PLAY);
 
     //TODO figure out all the intent stuff
@@ -114,122 +92,11 @@ public class MainActivity extends AppCompatActivity {
       }
     }
     else {
-      topTime = 0 * HOUR + 1 * MINUTE;
-      bottomTime = 0 * HOUR + 1 * SECOND;
+      topTime    = 0 * HOUR + 1 * MINUTE + 0 * SECOND;
+      bottomTime = 0 * HOUR + 1 * SECOND + 0 * SECOND;
     }
 
-    topButton.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            if(bottomTime > 0) {
-              bottomButton.setBackgroundColor(0xFF00CCCC);
-            }
-            else
-              bottomButton.setBackgroundColor(0xFFFF4444);
-
-            if(topTime > 0) {
-              topButton.setBackgroundColor(0xFF222222);
-              //((TextView) findViewById(R.id.topTime)).setText(createTimeString(topTime, 0, true, false));
-            }
-            else
-              topButton.setBackgroundColor(0xFFFF4444);
-
-            pauseButton.setVisibility(View.VISIBLE);
-            turn = PLAYER_BOT;
-            break;
-        }
-        return false;
-      }
-    });
-
-    bottomButton.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            if(bottomTime > 0) {
-              bottomButton.setBackgroundColor(0xFF222222);
-              //((TextView) findViewById(R.id.bottomTime)).setText(createTimeString(bottomTime, 0, true, false));
-            }
-            else
-              bottomButton.setBackgroundColor(0xFFFF4444);
-
-            if(topTime > 0) {
-              topButton.setBackgroundColor(0xFF00CCCC);
-            }
-            else
-              topButton.setBackgroundColor(0xFFFF4444);
-            pauseButton.setVisibility(View.VISIBLE);
-            turn = PLAYER_TOP;
-            break;
-        }
-        return false;
-      }
-    });
-
-    pauseButton.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            if(bottomTime > 0) {
-              bottomButton.setBackgroundColor(0xFF222222);
-              //((TextView) findViewById(R.id.bottomTime)).setText(createTimeString(bottomTime, 0, true, false));
-            }
-            else
-              bottomButton.setBackgroundColor(0xFFFF4444);
-
-            if(topTime > 0) {
-              topButton.setBackgroundColor(0xFF222222);
-              //((TextView) findViewById(R.id.topTime)).setText(createTimeString(topTime, 0, true, false));
-            }
-            else
-              topButton.setBackgroundColor(0xFFFF4444);
-
-            pauseButton.setVisibility(View.INVISIBLE);
-            turn = PAUSE;
-            break;
-        }
-        return false;
-      }
-    });
-
-    editButton.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            if(editMode) {
-              editMode = false;
-              setMode(MODE_PLAY);
-            }
-            else {
-              editMode = true;
-              setMode(MODE_EDIT_TIME);
-            }
-            break;
-        }
-        return false;
-      }
-    });
-
-    settingsButton.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
-            startActivityForResult(myIntent, 0);
-            break;
-        }
-        return false;
-      }
-    });
-
-
-
+    //update times each 10 ms
     Timer t = new Timer();
     t.scheduleAtFixedRate(new TimerTask() {
       @Override
@@ -244,7 +111,57 @@ public class MainActivity extends AppCompatActivity {
         updateTimes();
       }
     }, 10, 10);
+  }
 
+  @Override
+  public void onClick(View v) {
+
+    switch (v.getId()) {
+      case R.id.topButton:
+        if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF00CCCC);
+        else               bottomButton.setBackgroundColor(0xFFFF4444);
+        if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
+        else               topButton.setBackgroundColor(0xFFFF4444);
+        turn = PLAYER_BOT;
+        setMode(MODE_PLAY);
+        break;
+      case R.id.bottomButton:
+        if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
+        else               bottomButton.setBackgroundColor(0xFFFF4444);
+        if(topTime > 0)    topButton.setBackgroundColor(0xFF00CCCC);
+        else               topButton.setBackgroundColor(0xFFFF4444);
+        turn = PLAYER_TOP;
+        setMode(MODE_PLAY);
+        break;
+      case R.id.editButton:
+        if(editMode) {
+          editMode = false;
+          setMode(MODE_PAUSE);
+        }
+        else {
+          editMode = true;
+          setMode(MODE_EDIT_TIME);
+        }
+        break;
+      case R.id.pauseButton:
+        setMode(MODE_PAUSE);
+        break;
+      case R.id.settingsButton:
+        Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
+        startActivityForResult(myIntent, 0);
+        break;
+      //TODO implement the HH:MM vs MM:SS edit time modes
+      case R.id.editTimeTop1Up: topTime += SECOND; break;
+      case R.id.editTimeTop2Up: topTime += MINUTE; break;
+      case R.id.editTimeBottom1Up: bottomTime += SECOND; break;
+      case R.id.editTimeBottom2Up: bottomTime += MINUTE; break;
+      case R.id.editTimeTop1Down: topTime -= SECOND; if(topTime < 0) topTime = 0; break;
+      case R.id.editTimeTop2Down: topTime -= MINUTE; if(topTime < 0) topTime = 0; break;
+      case R.id.editTimeBottom1Down: bottomTime -= SECOND; if(bottomTime < 0) bottomTime = 0; break;
+      case R.id.editTimeBottom2Down: bottomTime -= MINUTE; if(bottomTime < 0) bottomTime = 0; break;
+      default:
+        break;
+    }
 
   }
 
@@ -257,16 +174,20 @@ public class MainActivity extends AppCompatActivity {
         else
           topTimeTV.setText(createTimeString(topTime, 0, false, false));
 
-        if(topTime <= 0)
+        if(topTime <= 0) {
+          topTime = 0;
           topButton.setBackgroundColor(0xFFFF4444);
+        }
 
         if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
           bottomTimeTV.setText(createTimeString(bottomTime, 0, true, false));
         else
           bottomTimeTV.setText(createTimeString(bottomTime, 0, false, false));
 
-        if(bottomTime <= 0)
+        if(bottomTime <= 0) {
+          bottomTime = 0;
           bottomButton.setBackgroundColor(0xFFFF4444);
+        }
       }
     });
   }
@@ -338,11 +259,30 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void setMode(int mode) {
-    if(mode == MODE_PLAY) {
-
+    if(mode == MODE_PLAY || mode == MODE_PAUSE) {
+      topButton.setVisibility(View.VISIBLE);
+      bottomButton.setVisibility(View.VISIBLE);
+    }
+    else {
+      topButton.setVisibility(View.INVISIBLE);
+      bottomButton.setVisibility(View.INVISIBLE);
     }
 
+    if(mode == MODE_PAUSE) {
+      if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
+      else               bottomButton.setBackgroundColor(0xFFFF4444);
+      if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
+      else               topButton.setBackgroundColor(0xFFFF4444);
+      turn = PAUSE;
+      pauseButton.setVisibility(View.INVISIBLE);
+    }
+    else if(mode == MODE_EDIT_TIME)
+      pauseButton.setVisibility(View.INVISIBLE);
+    else
+      pauseButton.setVisibility(View.VISIBLE);
+
     if(mode == MODE_EDIT_TIME) {
+      turn = 0;
       for(int i = 0; i < 8; i++) {
         editTimeButtons[i].setVisibility(View.VISIBLE);
       }

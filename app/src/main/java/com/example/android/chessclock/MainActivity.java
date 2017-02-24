@@ -14,22 +14,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-  final int PAUSE = 0;
-  final int PLAYER_TOP = 1;
-  final int PLAYER_BOT = 2;
-
-  final long HOUR = 3600000;
-  final long MINUTE = 60000;
-  final long SECOND = 1000;
-
-  final int MIN_PER_HOUR = 60;
-  final int SEC_PER_MIN = 60;
-
-  long[] initTimes;
-  long topTime;
-  long bottomTime;
-  int turn = PAUSE;
-
   TextView topTimeTV;
   TextView bottomTimeTV;
   Button topButton;
@@ -37,6 +21,39 @@ public class MainActivity extends AppCompatActivity {
   Button pauseButton;
   Button editButton;
   Button settingsButton;
+
+  Button[] editTimeButtons;
+  /*
+  Button editTimeTop1Up;
+  Button editTimeTop2Up;
+  Button editTimeBottom1Up;
+  Button editTimeBottom2Up;
+
+  Button editTimeTop1Down;
+  Button editTimeTop2Down;
+  Button editTimeBottom1Down;
+  Button editTimeBottom2Down;
+  */
+  final long HOUR = 3600000;
+  final long MINUTE = 60000;
+  final long SECOND = 1000;
+
+  final int PAUSE = 0;
+  final int PLAYER_TOP = 1;
+  final int PLAYER_BOT = 2;
+
+  final int MIN_PER_HOUR = 60;
+  final int SEC_PER_MIN = 60;
+
+  final int MODE_PLAY = 0;
+  final int MODE_EDIT_TIME = 1;
+
+  long[] initTimes;
+  long topTime;
+  long bottomTime;
+  int turn = PAUSE;
+
+  boolean editMode;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +64,42 @@ public class MainActivity extends AppCompatActivity {
     bottomTimeTV = (TextView) findViewById(R.id.bottomTime);
     topButton = (Button) findViewById(R.id.topButton);
     bottomButton = (Button) findViewById(R.id.bottomButton);
+
     pauseButton = (Button) findViewById(R.id.pauseButton);
     editButton = (Button) findViewById(R.id.editButton);
     settingsButton = (Button) findViewById(R.id.settingsButton);
+    /*
+    editTimeTop1Up = (Button) findViewById(R.id.editTimeTop1Up);
+    editTimeTop2Up = (Button) findViewById(R.id.editTimeTop2Up);
+    editTimeBottom1Up = (Button) findViewById(R.id.editTimeBottom1Up);
+    editTimeBottom2Up = (Button) findViewById(R.id.editTimeBottom2Up);
+
+    editTimeTop1Down = (Button) findViewById(R.id.editTimeTop1Down);
+    editTimeTop2Down = (Button) findViewById(R.id.editTimeTop2Down);
+    editTimeBottom1Down = (Button) findViewById(R.id.editTimeBottom1Down);
+    editTimeBottom2Down = (Button) findViewById(R.id.editTimeBottom2Down);
+
+    editTimeTop1Up.setVisibility(View.INVISIBLE);
+    */
+    editTimeButtons = new Button[8];
+
+    editTimeButtons[0] = (Button) findViewById(R.id.editTimeTop1Up);
+    editTimeButtons[1] = (Button) findViewById(R.id.editTimeTop2Up);
+    editTimeButtons[2] = (Button) findViewById(R.id.editTimeBottom1Up);
+    editTimeButtons[3] = (Button) findViewById(R.id.editTimeBottom2Up);
+
+    editTimeButtons[4] = (Button) findViewById(R.id.editTimeTop1Down);
+    editTimeButtons[5] = (Button) findViewById(R.id.editTimeTop2Down);
+    editTimeButtons[6] = (Button) findViewById(R.id.editTimeBottom1Down);
+    editTimeButtons[7] = (Button) findViewById(R.id.editTimeBottom2Down);
+
+    editMode = false;
+
+    for(int i = 0; i < 8; i++) {
+      editTimeButtons[i].setVisibility(View.INVISIBLE);
+    }
+
+    setMode(MODE_PLAY);
 
     //TODO figure out all the intent stuff
     //Need intent for setting time control
@@ -151,7 +201,14 @@ public class MainActivity extends AppCompatActivity {
       public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
-
+            if(editMode) {
+              editMode = false;
+              setMode(MODE_PLAY);
+            }
+            else {
+              editMode = true;
+              setMode(MODE_EDIT_TIME);
+            }
             break;
         }
         return false;
@@ -278,5 +335,22 @@ public class MainActivity extends AppCompatActivity {
         timeString = "0:00";
     }
     return timeString;
+  }
+
+  public void setMode(int mode) {
+    if(mode == MODE_PLAY) {
+
+    }
+
+    if(mode == MODE_EDIT_TIME) {
+      for(int i = 0; i < 8; i++) {
+        editTimeButtons[i].setVisibility(View.VISIBLE);
+      }
+    }
+    else {
+      for(int i = 0; i < 8; i++) {
+        editTimeButtons[i].setVisibility(View.INVISIBLE);
+      }
+    }
   }
 }

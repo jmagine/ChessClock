@@ -6,9 +6,9 @@
              dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <ListPreference
-      android:defaultValue="-1"
-      android:entries="@array/pref_example_list_titles"
-      android:entryValues="@array/pref_example_list_values"
+      android:defaultValue="SS:d"
+      android:entries="@array/time_formats"
+      android:entryValues="@array/time_formats"
       android:key="time_format"
       android:negativeButtonText="@null"
       android:positiveButtonText="@null"
@@ -36,6 +36,6 @@
     android:maxLines="1"
     android:selectAllOnFocus="true"
     android:singleLine="true"
-    android:title="@string/pref_title_display_name"/>
+    android:title="Display Name"/>
 
 </PreferenceScreen>

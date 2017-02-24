@@ -84,6 +84,17 @@
           android:layout_margin="16dp"/>
       </LinearLayout>
 
+      <ImageView
+        android:id="@+id/topFirstFlag"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="32dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:elevation="10dp"
+        android:background="#ff0000"/>
+
     </RelativeLayout>
 
 
@@ -128,26 +139,6 @@
       android:layout_height="0dp"
       android:layout_weight="4">
 
-      <Button
-        android:id="@+id/bottomButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#222"
-        android:alpha="1"/>
-
-      <TextView
-        android:id="@+id/bottomTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:rotation="-90"
-        android:clickable="false"
-        android:text="01:00"
-        android:textSize="60sp"
-        android:textColor="#fff"
-        android:elevation="10dp"/>
-
       <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -185,6 +176,40 @@
           android:layout_height="64dp"
           android:layout_margin="16dp"/>
       </LinearLayout>
+
+      <TextView
+        android:id="@+id/bottomTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="-90"
+        android:clickable="false"
+        android:text="01:00"
+        android:textSize="60sp"
+        android:textColor="#fff"
+        android:elevation="10dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
+      <Button
+        android:id="@+id/bottomButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#222"
+        android:alpha="1"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+      <ImageView
+        android:id="@+id/bottomFirstFlag"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="32dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:elevation="10dp"
+        android:background="#ff0000"/>
 
     </RelativeLayout>
 

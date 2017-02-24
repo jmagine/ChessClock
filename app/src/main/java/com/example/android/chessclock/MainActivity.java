@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
 
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   Button controlButton2;
   Button soundButton;
   Button settingsButton;
+  ImageView topFirstFlag;
+  ImageView bottomFirstFlag;
   TextView topTimeTV;
   TextView bottomTimeTV;
 
@@ -60,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     editTimeButtons = new Button[8];
     topTimeTV = (TextView) findViewById(R.id.topTime);
     bottomTimeTV = (TextView) findViewById(R.id.bottomTime);
+    topFirstFlag = (ImageView) findViewById(R.id.topFirstFlag);
+    bottomFirstFlag = (ImageView) findViewById(R.id.bottomFirstFlag);
     topButton = (Button) findViewById(R.id.topButton);
     bottomButton = (Button) findViewById(R.id.bottomButton);
     controlButton1 = (Button) findViewById(R.id.controlButton1);
@@ -98,8 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       }
     }
     else {
-      initTopTime    = 0 * HOUR + 1 * MINUTE + 0 * SECOND;
-      initBottomTime = 0 * HOUR + 2 * SECOND + 0 * SECOND;
+      initTopTime    = 0 * HOUR + 0 * MINUTE + 1 * SECOND;
+      initBottomTime = 0 * HOUR + 0 * MINUTE + 1 * SECOND;
     }
 
     editMode = false;
@@ -197,6 +202,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if(topTime <= 0) {
           topTime = 0;
           topButton.setBackgroundColor(0xFFFF4444);
+
+          if(bottomTime > 0)
+            topFirstFlag.setVisibility(View.VISIBLE);
         }
 
         if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
@@ -207,6 +215,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if(bottomTime <= 0) {
           bottomTime = 0;
           bottomButton.setBackgroundColor(0xFFFF4444);
+
+          if(topTime > 0)
+            bottomFirstFlag.setVisibility(View.VISIBLE);
         }
       }
     });
@@ -295,6 +306,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         topButton.setVisibility(View.VISIBLE);
         bottomButton.setVisibility(View.VISIBLE);
+        topFirstFlag.setVisibility(View.INVISIBLE);
+        bottomFirstFlag.setVisibility(View.INVISIBLE);
 
         controlButton1.setText("Time Control");
         controlButton2.setText("Edit Time");
@@ -310,7 +323,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         else               topButton.setBackgroundColor(0xFFFF4444);
         if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
         else               bottomButton.setBackgroundColor(0xFFFF4444);
-
         break;
       case MODE_PLAY:
         topButton.setVisibility(View.VISIBLE);
@@ -344,6 +356,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       case MODE_EDIT_TIME:
         topButton.setVisibility(View.INVISIBLE);
         bottomButton.setVisibility(View.INVISIBLE);
+        topFirstFlag.setVisibility(View.INVISIBLE);
+        bottomFirstFlag.setVisibility(View.INVISIBLE);
 
         controlButton1.setText("Apply");
         controlButton2.setText("Cancel");

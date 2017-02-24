@@ -35,29 +35,41 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   Button controlButton2;
   Button soundButton;
   Button settingsButton;
+  Button topEditTimeModeUp;
+  Button topEditTimeModeDown;
+  Button bottomEditTimeModeUp;
+  Button bottomEditTimeModeDown;
   ImageView topFirstFlag;
   ImageView bottomFirstFlag;
   TextView topTimeTV;
   TextView bottomTimeTV;
 
+  //millis factors
   final long HOUR = 3600000;
   final long MINUTE = 60000;
   final long SECOND = 1000;
 
+  //conversion factors
+  final int MIN_PER_HOUR = 60;
+  final int SEC_PER_MIN = 60;
+
+  //display mode
+  final int DISP_MIN_SEC = 0;
+  final int DISP_HOUR_MIN = 1;
+  final int DISP_AUTO = 2;
+
+  //turn
   final int PAUSE = 0;
   final int PLAYER_TOP = 1;
   final int PLAYER_BOT = 2;
 
-  final int MIN_PER_HOUR = 60;
-  final int SEC_PER_MIN = 60;
-
+  //clock modes
   final int MODE_INIT      = 0;
   final int MODE_PLAY      = 1;
   final int MODE_PAUSE     = 2;
   final int MODE_EDIT_TIME = 3;
 
   String timeFormat;
-
   long[] initTimes;
   long topTime;
   long bottomTime;
@@ -65,14 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   long tempBottomTime;
   long initTopTime;
   long initBottomTime;
-  int turn;
-  int currMode;
-
-  boolean playSounds;
-
-  boolean leadingZero;
-  boolean blinkingColon;
-  boolean timeUnits;
+  int turn;               //turn to move
+  int currMode;           //current clock mode
+  int displayTimeModeTop;    //HOUR_MIN or MIN_SEC mode
+  int displayTimeModeBottom; //HOUR_MIN or MIN_SEC mode
+  boolean playSounds;     //whether to play sounds
+  boolean leadingZero;    //whether to display leading 0
+  boolean blinkingColon;  //whether to blink colon
+  boolean timeUnits;      //whether to display s or m after time
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     controlButton2 = (Button) findViewById(R.id.controlButton2);
     soundButton = (Button) findViewById(R.id.soundButton);
     settingsButton = (Button) findViewById(R.id.settingsButton);
+    topEditTimeModeUp = (Button) findViewById(R.id.topEditTimeModeUp);
+    topEditTimeModeDown = (Button) findViewById(R.id.topEditTimeModeDown);
+    bottomEditTimeModeUp = (Button) findViewById(R.id.bottomEditTimeModeUp);
+    bottomEditTimeModeDown = (Button) findViewById(R.id.bottomEditTimeModeDown);
     editTimeButtons[0] = (Button) findViewById(R.id.editTimeTop1Up);
     editTimeButtons[1] = (Button) findViewById(R.id.editTimeTop2Up);
     editTimeButtons[2] = (Button) findViewById(R.id.editTimeBottom1Up);
@@ -109,6 +125,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     controlButton2.setOnTouchListener(this);
     soundButton.setOnTouchListener(this);
     settingsButton.setOnTouchListener(this);
+    topEditTimeModeUp.setOnTouchListener(this);
+    topEditTimeModeDown.setOnTouchListener(this);
+    bottomEditTimeModeUp.setOnTouchListener(this);
+    bottomEditTimeModeDown.setOnTouchListener(this);
 
     for(int i = 0; i < 8; i++)
       editTimeButtons[i].setOnTouchListener(this);
@@ -121,8 +141,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     if(bundle != null) {
       initTimes = bundle.getLongArray("times");
       if(initTimes != null) {
-        topTime = initTimes[0];
-        bottomTime = initTimes[1];
+        initTopTime = initTimes[0];
+        initBottomTime = initTimes[1];
       }
     }
     else {
@@ -194,7 +214,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         break;
       case R.id.controlButton1:
         if(currMode == MODE_INIT) {
-
+          Intent myIntent = new Intent(controlButton1.getContext(), TimeSelectorActivity.class);
+          startActivityForResult(myIntent, 0);
         }
         else if(currMode == MODE_PLAY || currMode == MODE_PAUSE)
           setMode(MODE_INIT);
@@ -221,15 +242,67 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
         startActivityForResult(myIntent, 0);
         break;
-      //TODO implement the HH:MM vs MM:SS edit time modes
-      case R.id.editTimeTop1Up:      topTime    += SECOND; break;
-      case R.id.editTimeTop2Up:      topTime    += MINUTE; break;
-      case R.id.editTimeBottom1Up:   bottomTime += SECOND; break;
-      case R.id.editTimeBottom2Up:   bottomTime += MINUTE; break;
-      case R.id.editTimeTop1Down:    topTime    -= SECOND; if(topTime < 0)    topTime = 0;    break;
-      case R.id.editTimeTop2Down:    topTime    -= MINUTE; if(topTime < 0)    topTime = 0;    break;
-      case R.id.editTimeBottom1Down: bottomTime -= SECOND; if(bottomTime < 0) bottomTime = 0; break;
-      case R.id.editTimeBottom2Down: bottomTime -= MINUTE; if(bottomTime < 0) bottomTime = 0; break;
+      //editTimeMode buttons, when 1 is pressed it gets hidden and other gets shown, then editTimeMode is set. don't forget to put in xml
+      case R.id.topEditTimeModeUp:
+        topEditTimeModeUp.setVisibility(View.INVISIBLE);
+        topEditTimeModeDown.setVisibility(View.VISIBLE);
+        if(displayTimeModeTop != DISP_HOUR_MIN)
+          displayTimeModeTop = DISP_HOUR_MIN;
+        break;
+      case R.id.topEditTimeModeDown:
+        topEditTimeModeUp.setVisibility(View.VISIBLE);
+        topEditTimeModeDown.setVisibility(View.INVISIBLE);
+        if(displayTimeModeTop != DISP_MIN_SEC)
+          displayTimeModeTop = DISP_MIN_SEC;
+        break;
+      case R.id.bottomEditTimeModeUp:
+        bottomEditTimeModeUp.setVisibility(View.INVISIBLE);
+        bottomEditTimeModeDown.setVisibility(View.VISIBLE);
+        if(displayTimeModeBottom != DISP_HOUR_MIN)
+          displayTimeModeBottom = DISP_HOUR_MIN;
+        break;
+      case R.id.bottomEditTimeModeDown:
+        bottomEditTimeModeUp.setVisibility(View.VISIBLE);
+        bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
+        if(displayTimeModeBottom != DISP_MIN_SEC)
+          displayTimeModeBottom = DISP_MIN_SEC;
+        break;
+      case R.id.editTimeTop1Up:
+        if(displayTimeModeTop == DISP_MIN_SEC) topTime += SECOND;
+        else                           topTime += MINUTE;
+        break;
+      case R.id.editTimeTop2Up:
+        if(displayTimeModeTop == DISP_MIN_SEC) topTime += MINUTE;
+        else                           topTime += HOUR;
+        break;
+      case R.id.editTimeBottom1Up:
+        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime += SECOND;
+        else                              bottomTime += MINUTE;
+        break;
+      case R.id.editTimeBottom2Up:
+        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime += MINUTE;
+        else                              bottomTime += HOUR;
+        break;
+      case R.id.editTimeTop1Down:
+        if(displayTimeModeTop == DISP_MIN_SEC) topTime -= SECOND;
+        else                           topTime -= MINUTE;
+        if(topTime < 0)                topTime = 0;
+        break;
+      case R.id.editTimeTop2Down:
+        if(displayTimeModeTop == DISP_MIN_SEC) topTime -= MINUTE;
+        else                           topTime -= HOUR;
+        if(topTime < 0)                topTime = 0;
+        break;
+      case R.id.editTimeBottom1Down:
+        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime -= SECOND;
+        else                              bottomTime -= MINUTE;
+        if(bottomTime < 0)                bottomTime = 0;
+        break;
+      case R.id.editTimeBottom2Down:
+        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime -= MINUTE;
+        else                              bottomTime -= HOUR;
+        if(bottomTime < 0)                bottomTime = 0;
+        break;
       default:
         break;
     }
@@ -241,9 +314,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       @Override
       public void run() {
         if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
-          topTimeTV.setText(createTimeString(topTime, 0, true, leadingZero, timeUnits));
+          topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits));
         else
-          topTimeTV.setText(createTimeString(topTime, 0, !blinkingColon, leadingZero, timeUnits));
+          topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, !blinkingColon, leadingZero, timeUnits));
 
         if(topTime <= 0) {
           topTime = 0;
@@ -254,9 +327,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
 
         if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
-          bottomTimeTV.setText(createTimeString(bottomTime, 0, true, leadingZero, timeUnits));
+          bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, true, leadingZero, timeUnits));
         else
-          bottomTimeTV.setText(createTimeString(bottomTime, 0, !blinkingColon, leadingZero, timeUnits));
+          bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, !blinkingColon, leadingZero, timeUnits));
 
         if(bottomTime <= 0) {
           bottomTime = 0;
@@ -272,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   public String createTimeString(long time, int displayMode, boolean colon, boolean leadingZero, boolean timeUnits) {
     String timeString = "";
     //Process HH:MM format times
-    if(time >= HOUR) {
+    if((time >= HOUR || displayMode == DISP_HOUR_MIN) && (displayMode != DISP_MIN_SEC)) {
       if(time / HOUR < 10 && leadingZero)
         timeString = timeString.concat("0" + time / HOUR);
       else
@@ -293,11 +366,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     //Process MM:SS format times
-    else if(time >= MINUTE) {
-      if(time / MINUTE < 10 && leadingZero)
-        timeString = timeString.concat("0" + time / MINUTE);
+    else if(time >= MINUTE || displayMode == DISP_MIN_SEC) {
+      if((time / MINUTE) % MIN_PER_HOUR < 10 && leadingZero)
+        timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
       else
-        timeString = timeString.concat("" + time / MINUTE);
+        timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
 
       if(colon)
         timeString = timeString.concat(":");
@@ -340,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         timeString = "00:00";
       else
         timeString = "0:00";
-      
+
       if(timeUnits)
         timeString = timeString.concat("s");
     }
@@ -366,6 +439,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         bottomButton.setVisibility(View.VISIBLE);
         topFirstFlag.setVisibility(View.INVISIBLE);
         bottomFirstFlag.setVisibility(View.INVISIBLE);
+
+        topEditTimeModeUp.setVisibility(View.INVISIBLE);
+        topEditTimeModeDown.setVisibility(View.INVISIBLE);
+        bottomEditTimeModeUp.setVisibility(View.INVISIBLE);
+        bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
 
         controlButton1.setText("Time Control");
         controlButton2.setText("Edit Time");
@@ -394,6 +472,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         topButton.setVisibility(View.VISIBLE);
         bottomButton.setVisibility(View.VISIBLE);
 
+        topEditTimeModeUp.setVisibility(View.INVISIBLE);
+        topEditTimeModeDown.setVisibility(View.INVISIBLE);
+        bottomEditTimeModeUp.setVisibility(View.INVISIBLE);
+        bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
+
         //if out of time, button is still red. otherwise unpressed color
         if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
         else               topButton.setBackgroundColor(0xFFFF4444);
@@ -403,6 +486,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         controlButton1.setText("Reset");
         controlButton2.setText("Edit Time");
+        displayTimeModeTop = DISP_AUTO;
+        displayTimeModeBottom = DISP_AUTO;
 
         for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
 
@@ -413,6 +498,28 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         bottomButton.setVisibility(View.INVISIBLE);
         topFirstFlag.setVisibility(View.INVISIBLE);
         bottomFirstFlag.setVisibility(View.INVISIBLE);
+
+        if(topTime < HOUR) {
+          topEditTimeModeUp.setVisibility(View.VISIBLE);
+          topEditTimeModeDown.setVisibility(View.INVISIBLE);
+          displayTimeModeTop = DISP_MIN_SEC;
+        }
+        else {
+          topEditTimeModeUp.setVisibility(View.INVISIBLE);
+          topEditTimeModeDown.setVisibility(View.VISIBLE);
+          displayTimeModeTop = DISP_HOUR_MIN;
+        }
+
+        if(bottomTime < HOUR) {
+          bottomEditTimeModeUp.setVisibility(View.VISIBLE);
+          bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
+          displayTimeModeBottom = DISP_MIN_SEC;
+        }
+        else {
+          bottomEditTimeModeUp.setVisibility(View.INVISIBLE);
+          bottomEditTimeModeDown.setVisibility(View.VISIBLE);
+          displayTimeModeBottom = DISP_HOUR_MIN;
+        }
 
         controlButton1.setText("Apply");
         controlButton2.setText("Cancel");

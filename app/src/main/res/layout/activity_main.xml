@@ -54,13 +54,13 @@
         android:elevation="10dp">
         <Button
           android:id="@+id/editTimeTop1Up"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
         <Button
           android:id="@+id/editTimeTop2Up"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
       </LinearLayout>
 
@@ -74,15 +74,30 @@
         android:elevation="10dp">
         <Button
           android:id="@+id/editTimeTop1Down"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
         <Button
           android:id="@+id/editTimeTop2Down"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
       </LinearLayout>
+
+      <Button
+        android:id="@+id/topEditTimeModeDown"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp"/>
+
+      <Button
+        android:id="@+id/topEditTimeModeUp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:elevation="10dp"/>
 
       <ImageView
         android:id="@+id/topFirstFlag"
@@ -147,13 +162,13 @@
         android:elevation="10dp">
         <Button
           android:id="@+id/editTimeBottom1Up"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
         <Button
           android:id="@+id/editTimeBottom2Up"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
       </LinearLayout>
 
@@ -167,13 +182,13 @@
         android:elevation="10dp">
         <Button
           android:id="@+id/editTimeBottom1Down"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
         <Button
           android:id="@+id/editTimeBottom2Down"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_margin="16dp"/>
       </LinearLayout>
 
@@ -210,6 +225,21 @@
         android:layout_alignParentEnd="true"
         android:elevation="10dp"
         android:background="#ff0000"/>
+
+      <Button
+        android:id="@+id/bottomEditTimeModeDown"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp"/>
+
+      <Button
+        android:id="@+id/bottomEditTimeModeUp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:elevation="10dp"/>
 
     </RelativeLayout>
 

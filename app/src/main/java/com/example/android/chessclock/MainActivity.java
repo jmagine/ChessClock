@@ -2,18 +2,32 @@ package com.example.android.chessclock;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.media.MediaPlayer;
+
+import android.util.Log;
+
 import android.view.MotionEvent;
 import android.view.View;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
-import java.util.Timer;
+import android.preference.PreferenceManager;
+
 import java.util.TimerTask;
+import java.util.Timer;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener, OnSharedPreferenceChangeListener{
+
+  MediaPlayer mp1;
+  MediaPlayer mp2;
+
   Button[] editTimeButtons;
   Button topButton;
   Button bottomButton;
@@ -42,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   final int MODE_PAUSE     = 2;
   final int MODE_EDIT_TIME = 3;
 
+  String timeFormat;
+
   long[] initTimes;
   long topTime;
   long bottomTime;
@@ -49,15 +65,22 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   long tempBottomTime;
   long initTopTime;
   long initBottomTime;
-  int turn = PAUSE;
+  int turn;
   int currMode;
 
-  boolean editMode;
+  boolean playSounds;
+
+  boolean leadingZero;
+  boolean blinkingColon;
+  boolean timeUnits;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    mp1 = MediaPlayer.create(this, R.raw.tick);
+    mp2 = MediaPlayer.create(this, R.raw.tick);
 
     //initialize all the ui elements
     editTimeButtons = new Button[8];
@@ -107,7 +130,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       initBottomTime = 0 * HOUR + 0 * MINUTE + 1 * SECOND;
     }
 
-    editMode = false;
+    playSounds = true;
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+
+    leadingZero = sharedPref.getBoolean("leading_zero", leadingZero);
+    blinkingColon = sharedPref.getBoolean("blinking_colon", blinkingColon);
+    timeUnits = sharedPref.getBoolean("time_units", timeUnits);
+    timeFormat = sharedPref.getString("time_format", timeFormat);
+
+    sharedPref.registerOnSharedPreferenceChangeListener(this);
+
+
+    Log.d("jasLogs", leadingZero + " " + blinkingColon + " " + timeUnits + " " + timeFormat);
+
     setMode(MODE_INIT);
 
     //update times each 10 ms
@@ -134,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     switch (v.getId()) {
       case R.id.topButton:
+        if(mp1 != null && playSounds && turn != PLAYER_BOT)
+          mp1.start();
+
         if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF00CCCC);
         else               bottomButton.setBackgroundColor(0xFFFF4444);
         if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
@@ -142,6 +182,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         setMode(MODE_PLAY);
         break;
       case R.id.bottomButton:
+        if(mp2 != null && playSounds && turn != PLAYER_TOP)
+          mp2.start();
+
         if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
         else               bottomButton.setBackgroundColor(0xFFFF4444);
         if(topTime > 0)    topButton.setBackgroundColor(0xFF00CCCC);
@@ -169,7 +212,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           setMode(MODE_PAUSE);
         break;
       case R.id.soundButton:
-        //TODO sound
+        if(playSounds)
+          playSounds = false;
+        else
+          playSounds = true;
         break;
       case R.id.settingsButton:
         Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
@@ -195,35 +241,35 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       @Override
       public void run() {
         if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
-          topTimeTV.setText(createTimeString(topTime, 0, true, false));
+          topTimeTV.setText(createTimeString(topTime, 0, true, leadingZero, timeUnits));
         else
-          topTimeTV.setText(createTimeString(topTime, 0, false, false));
+          topTimeTV.setText(createTimeString(topTime, 0, !blinkingColon, leadingZero, timeUnits));
 
         if(topTime <= 0) {
           topTime = 0;
           topButton.setBackgroundColor(0xFFFF4444);
 
-          if(bottomTime > 0)
+          if(bottomTime > 0 && currMode != MODE_EDIT_TIME)
             topFirstFlag.setVisibility(View.VISIBLE);
         }
 
         if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
-          bottomTimeTV.setText(createTimeString(bottomTime, 0, true, false));
+          bottomTimeTV.setText(createTimeString(bottomTime, 0, true, leadingZero, timeUnits));
         else
-          bottomTimeTV.setText(createTimeString(bottomTime, 0, false, false));
+          bottomTimeTV.setText(createTimeString(bottomTime, 0, !blinkingColon, leadingZero, timeUnits));
 
         if(bottomTime <= 0) {
           bottomTime = 0;
           bottomButton.setBackgroundColor(0xFFFF4444);
 
-          if(topTime > 0)
+          if(topTime > 0 && currMode != MODE_EDIT_TIME)
             bottomFirstFlag.setVisibility(View.VISIBLE);
         }
       }
     });
   }
 
-  public String createTimeString(long time, int displayMode, boolean colon, boolean leadingZero) {
+  public String createTimeString(long time, int displayMode, boolean colon, boolean leadingZero, boolean timeUnits) {
     String timeString = "";
     //Process HH:MM format times
     if(time >= HOUR) {
@@ -241,6 +287,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
       else
         timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
+
+      if(timeUnits)
+        timeString = timeString.concat("m");
     }
 
     //Process MM:SS format times
@@ -259,6 +308,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
       else
         timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+
+      if(timeUnits)
+        timeString = timeString.concat("s");
     }
 
     //Process < 1 minute times
@@ -277,6 +329,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
       else
         timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+
+      if(timeUnits)
+        timeString = timeString.concat("s");
     }
 
     //Process 0 or negative times
@@ -285,6 +340,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         timeString = "00:00";
       else
         timeString = "0:00";
+      
+      if(timeUnits)
+        timeString = timeString.concat("s");
     }
     return timeString;
   }
@@ -312,10 +370,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         controlButton1.setText("Time Control");
         controlButton2.setText("Edit Time");
 
-        for(int i = 0; i < 8; i++)
-          editTimeButtons[i].setVisibility(View.INVISIBLE);
+        for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
 
-        turn = 0;
+        turn = PAUSE;
         resetTimes();
 
         //if out of time, button is still red. otherwise unpressed color
@@ -331,8 +388,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         controlButton1.setText("Reset");
         controlButton2.setText("Pause");
 
-        for(int i = 0; i < 8; i++)
-          editTimeButtons[i].setVisibility(View.INVISIBLE);
+        for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
         break;
       case MODE_PAUSE:
         topButton.setVisibility(View.VISIBLE);
@@ -348,10 +404,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         controlButton1.setText("Reset");
         controlButton2.setText("Edit Time");
 
-        for(int i = 0; i < 8; i++)
-          editTimeButtons[i].setVisibility(View.INVISIBLE);
+        for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
 
-        turn = 0;
+        turn = PAUSE;
         break;
       case MODE_EDIT_TIME:
         topButton.setVisibility(View.INVISIBLE);
@@ -365,13 +420,85 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         tempTopTime = topTime;
         tempBottomTime = bottomTime;
 
-        for(int i = 0; i < 8; i++)
-          editTimeButtons[i].setVisibility(View.VISIBLE);
+        for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.VISIBLE);
 
-        turn = 0;
+        turn = PAUSE;
         break;
     }
 
     currMode = mode;
+  }
+
+  public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                        String key) {
+    switch(key) {
+      case "leading_zero":
+        leadingZero = prefs.getBoolean("leading_zero", false);
+        break;
+      case "blinking_colon":
+        blinkingColon = prefs.getBoolean("blinking_colon", true);
+        break;
+      case "time_units":
+        timeUnits = prefs.getBoolean("time_units", false);
+        break;
+      case "time_format":
+        timeFormat = prefs.getString("time_format", "SS:d");
+        break;
+    }
+
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    mp1 = MediaPlayer.create(this, R.raw.tick);
+    mp2 = MediaPlayer.create(this, R.raw.tick);
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    sharedPref.getBoolean("leading_zero", leadingZero);
+    sharedPref.getBoolean("blinking_colon", blinkingColon);
+    sharedPref.getBoolean("time_units", timeUnits);
+    sharedPref.getString("time_format", timeFormat);
+  }
+
+  @Override
+  protected void onRestart() {
+    super.onRestart();
+
+    if(mp1 == null)
+      mp1 = MediaPlayer.create(this, R.raw.tick);
+    if(mp2 == null)
+      mp2 = MediaPlayer.create(this, R.raw.tick);
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    sharedPref.getBoolean("leading_zero", leadingZero);
+    sharedPref.getBoolean("blinking_colon", blinkingColon);
+    sharedPref.getBoolean("time_units", timeUnits);
+    sharedPref.getString("time_format", timeFormat);
+
+    setMode(MODE_INIT);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    if(mp1 != null)
+      mp1.release();
+
+    if(mp2 != null)
+      mp2.release();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+
+    if(mp1 != null)
+      mp1.release();
+
+    if(mp2 != null)
+      mp2.release();
   }
 }

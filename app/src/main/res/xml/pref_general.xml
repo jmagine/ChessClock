@@ -1,4 +1,8 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <Preference
+    android:title="General Settings">
+  </Preference>
   <PreferenceCategory
     android:key="time_display"
     android:title="Time Display">
@@ -15,27 +19,22 @@
       android:title="Select Time Format"/>
 
     <SwitchPreference
+      android:defaultValue="true"
+      android:key="blinking_colon"
+      android:summary="Colon blinks every second"
+      android:title="Blinking Colon"/>
+
+    <SwitchPreference
       android:defaultValue="false"
       android:key="leading_zero"
+      android:summary="05:00 vs 5:00 Format"
       android:title="Leading Zero"/>
 
     <SwitchPreference
       android:defaultValue="false"
       android:key="time_units"
-      android:summary="@string/pref_description_social_recommendations"
+      android:summary="Display unit after time"
       android:title="Time Units"/>
   </PreferenceCategory>
-
-  <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-  <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-  <EditTextPreference
-    android:capitalize="words"
-    android:defaultValue="@string/pref_default_display_name"
-    android:inputType="textCapWords"
-    android:key="example_text"
-    android:maxLines="1"
-    android:selectAllOnFocus="true"
-    android:singleLine="true"
-    android:title="Display Name"/>
 
 </PreferenceScreen>

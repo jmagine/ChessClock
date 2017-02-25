@@ -1,6 +1,7 @@
 package com.example.android.chessclock;
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 
 import android.media.MediaPlayer;
@@ -29,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   Button[] editTimeButtons;
   Button topButton;
   Button bottomButton;
-  Button controlButton1;
-  Button controlButton2;
-  Button soundButton;
-  Button settingsButton;
+  ImageView controlButton1;
+  ImageView controlButton2;
+  ImageView soundButton;
+  ImageView settingsButton;
   Button topEditTimeModeUp;
   Button topEditTimeModeDown;
   Button bottomEditTimeModeUp;
@@ -106,10 +107,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     bottomFirstFlag = (ImageView) findViewById(R.id.bottomFirstFlag);
     topButton = (Button) findViewById(R.id.topButton);
     bottomButton = (Button) findViewById(R.id.bottomButton);
-    controlButton1 = (Button) findViewById(R.id.controlButton1);
-    controlButton2 = (Button) findViewById(R.id.controlButton2);
-    soundButton = (Button) findViewById(R.id.soundButton);
-    settingsButton = (Button) findViewById(R.id.settingsButton);
+    controlButton1 = (ImageView) findViewById(R.id.controlButton1);
+    controlButton2 = (ImageView) findViewById(R.id.controlButton2);
+    soundButton = (ImageView) findViewById(R.id.soundButton);
+    settingsButton = (ImageView) findViewById(R.id.settingsButton);
     topEditTimeModeUp = (Button) findViewById(R.id.topEditTimeModeUp);
     topEditTimeModeDown = (Button) findViewById(R.id.topEditTimeModeDown);
     bottomEditTimeModeUp = (Button) findViewById(R.id.bottomEditTimeModeUp);
@@ -296,16 +297,19 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if(playSounds) {
           playSounds = false;
           editor.putBoolean("sound", false);
+          soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_off));
         }
         else {
           playSounds = true;
           editor.putBoolean("sound", true);
+          soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_on));
         }
         editor.commit();
         break;
       case R.id.settingsButton:
         Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
-        startActivityForResult(myIntent, 0);
+        //startActivityForResult(myIntent, 0);
+        startActivity(myIntent);
         break;
       //editTimeMode buttons, when 1 is pressed it gets hidden and other gets shown, then editTimeMode is set. don't forget to put in xml
       case R.id.topEditTimeModeUp:
@@ -600,8 +604,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         bottomEditTimeModeUp.setVisibility(View.INVISIBLE);
         bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
 
-        controlButton1.setText("Time Control");
-        controlButton2.setText("Edit Time");
+        //controlButton1.setText("Time Control");
+        //controlButton2.setText("Edit Time");
+
+        controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.plus));
+        controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.edit_time));
 
         for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
 
@@ -621,8 +628,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         topButton.setVisibility(View.VISIBLE);
         bottomButton.setVisibility(View.VISIBLE);
 
-        controlButton1.setText("Reset");
-        controlButton2.setText("Pause");
+        //controlButton1.setText("Reset");
+        //controlButton2.setText("Pause");
+
+        controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.reset));
+        controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.pause));
 
         for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
         break;
@@ -642,8 +652,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         else               bottomButton.setBackgroundColor(0xFFFF4444);
 
 
-        controlButton1.setText("Reset");
-        controlButton2.setText("Edit Time");
+        //controlButton1.setText("Reset");
+        //controlButton2.setText("Edit Time");
+
+        controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.reset));
+        controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.edit_time));
         displayTimeModeTop = DISP_AUTO;
         displayTimeModeBottom = DISP_AUTO;
 
@@ -679,8 +692,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           displayTimeModeBottom = DISP_HOUR_MIN;
         }
 
-        controlButton1.setText("Apply");
-        controlButton2.setText("Cancel");
+        //controlButton1.setText("Apply");
+        //controlButton2.setText("Cancel");
+
+        controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.apply));
+        controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.cancel));
 
         tempTopTime = topTime;
         tempBottomTime = bottomTime;
@@ -725,6 +741,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     blinkingColon = sharedPref.getBoolean("blinking_colon", true);
     timeUnits = sharedPref.getBoolean("time_units", true);
     playSounds = sharedPref.getBoolean("sound", true);
+
+    if(playSounds)
+      soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_on));
+    else
+      soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_off));
   }
 
 }

@@ -8,7 +8,7 @@
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
-  <style name="AlertDialogCustomTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+  <style name="AlertDialogCustomTheme" parent="Theme.AppCompat.NoActionBar">
     <!-- Used for the buttons -->
     <item name="colorAccent">#00CCFF</item>
     <!-- Used for the title and text -->
@@ -17,7 +17,7 @@
     <item name="android:background">#111111</item>
   </style>
 
-  <style name="PreferencesTheme">
+  <style name="PreferencesTheme" parent="Theme.AppCompat">
     <item name="android:background">#FF000000</item>
   </style>
 

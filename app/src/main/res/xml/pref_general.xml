@@ -1,8 +1,6 @@
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
-  <Preference
-    android:title="General Settings">
-  </Preference>
+
   <PreferenceCategory
     android:key="time_display"
     android:title="Time Display">

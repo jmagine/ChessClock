@@ -21,8 +21,12 @@
     </activity>
     <activity
       android:name=".SettingsActivity"
+      android:parentActivityName=".MainActivity"
       android:label="@string/title_activity_settings"
-      android:theme="@style/Theme.AppCompat.NoActionBar">
+      android:theme="@style/PreferencesTheme">
+      <meta-data
+        android:name="android.support.PARENT_ACTIVITY"
+        android:value="com.example.android.chessclock.MainActivity" />
     </activity>
   </application>
 

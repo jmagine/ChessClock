@@ -119,33 +119,41 @@
       android:layout_weight="1"
       android:orientation="horizontal">
 
-      <Button
+      <ImageView
         android:id="@+id/controlButton1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Edit Time"/>
+        android:padding="8dp"
+        android:src="@drawable/reset"
+        android:scaleType="fitCenter"/>
 
-      <Button
+      <ImageView
         android:id="@+id/controlButton2"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Pause"/>
+        android:padding="8dp"
+        android:src="@drawable/pause"
+        android:scaleType="fitCenter"/>
 
-      <Button
+      <ImageView
         android:id="@+id/soundButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Sound"/>
+        android:padding="8dp"
+        android:src="@drawable/sound_on"
+        android:scaleType="fitCenter"/>
 
-      <Button
+      <ImageView
         android:id="@+id/settingsButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Settings"/>
+        android:padding="8dp"
+        android:src="@drawable/settings_gear"
+        android:scaleType="fitCenter"/>
 
     </LinearLayout>
 

@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
  */
 
 public class TimeSelectorActivity extends AppCompatActivity implements View.OnTouchListener{
+  static int player;
   static int playerTopTime;
   static int playerBottomTime;
   static int selectedTime;
@@ -44,18 +45,20 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnTo
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_time_selector);
 
-    initTimes = new long[2];
-
     Bundle bundle = getIntent().getExtras();
 
     if(bundle != null) {
       initTimes = bundle.getLongArray("times");
       if(initTimes != null) {
+        initTimes = new long[2];
+
         initTimes[0] = 0;
         initTimes[1] = 0;
       }
     }
     else {
+      initTimes = new long[2];
+
       initTimes[0] = 0;
       initTimes[1] = 0;
     }
@@ -90,7 +93,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnTo
       secPicker.setMinValue(0);
 
       return new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustomTheme)
-            .setTitle("Set Player 1 Time")
+            .setTitle("Set Player Time")
             .setView(v)
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               @Override
@@ -99,6 +102,11 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnTo
                 selectedTime += hourPicker.getValue() * Constants.HOUR;
                 selectedTime += minPicker.getValue() * Constants.MINUTE;
                 selectedTime += secPicker.getValue() * Constants.SECOND;
+
+                if(player == 0)
+                  playerTopTime = selectedTime;
+                else
+                  playerBottomTime = selectedTime;
               }
             })
             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -120,23 +128,31 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnTo
 
     switch (v.getId()) {
       case R.id.player1Time:
+        player = 0;
         NumberPickerFragment topTimeFragment = new NumberPickerFragment();
         topTimeFragment.show(getFragmentManager(), "Top Time");
-        initTimes[0] = selectedTime;
         break;
       case R.id.player2Time:
+        player = 1;
         NumberPickerFragment bottomTimeFragment = new NumberPickerFragment();
         bottomTimeFragment.show(getFragmentManager(), "Bottom Time");
-        initTimes[1] = selectedTime;
         break;
       case R.id.applyButton:
+        initTimes[0] = playerTopTime;
+        initTimes[1] = playerBottomTime;
+
         intent = new Intent(applyButton.getContext(), MainActivity.class);
         intent.putExtra("times", initTimes);
+        Log.d("jaslogs", initTimes[0] + " " + initTimes[1]);
         startActivityForResult(intent, 0);
         break;
       case R.id.cancelButton:
+        initTimes[0] = playerTopTime;
+        initTimes[1] = playerBottomTime;
+
         intent = new Intent(applyButton.getContext(), MainActivity.class);
         intent.putExtra("times", initTimes);
+        Log.d("jaslogs", initTimes[0] + " " + initTimes[1]);
         startActivityForResult(intent, 0);
         break;
     }

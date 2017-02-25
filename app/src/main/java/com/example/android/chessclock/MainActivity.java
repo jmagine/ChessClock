@@ -172,7 +172,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
     getPreferences();
     sharedPref.registerOnSharedPreferenceChangeListener(this);
-
+    displayTimeModeTop = DISP_AUTO;
+    displayTimeModeBottom = DISP_AUTO;
     setMode(MODE_INIT);
 
     //Update times each 10 ms
@@ -379,7 +380,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     mp1 = MediaPlayer.create(this, R.raw.tick);
     mp2 = MediaPlayer.create(this, R.raw.tick);
-
+    displayTimeModeTop = DISP_AUTO;
+    displayTimeModeBottom = DISP_AUTO;
     getPreferences();
   }
 
@@ -391,7 +393,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       mp1 = MediaPlayer.create(this, R.raw.tick);
     if(mp2 == null)
       mp2 = MediaPlayer.create(this, R.raw.tick);
-
+    displayTimeModeTop = DISP_AUTO;
+    displayTimeModeBottom = DISP_AUTO;
     getPreferences();
 
     setMode(MODE_INIT);
@@ -423,6 +426,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        switch(timeRotation) {
+          case "-90":
+            topTimeTV.setRotation(-90);
+            bottomTimeTV.setRotation(-90);
+            break;
+          case "90":
+            topTimeTV.setRotation(90);
+            bottomTimeTV.setRotation(90);
+            break;
+          case "180 and 0":
+            topTimeTV.setRotation(180);
+            bottomTimeTV.setRotation(0);
+            break;
+        }
+
         if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
           topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits));
         else
@@ -496,22 +514,37 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         timeString = timeString.concat("s");
     }
 
-    //Process < 1 minute times
+    //Process lower than 1 minute times
     else if(time > 0) {
-      if(time / MINUTE < 10 && leadingZero)
-        timeString = timeString.concat("0" + time / MINUTE);
-      else
-        timeString = timeString.concat("" + time / MINUTE);
+      switch(timeFormat) {
+        case "SS.d":
+          if((time / SECOND) % SEC_PER_MIN < 10)
+            timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+          else
+            timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
 
-      if(colon)
-        timeString = timeString.concat(":");
-      else
-        timeString = timeString.concat(" ");
+          timeString = timeString.concat("." + (time / 100) % 10);
+          break;
+        case "0:SS":
+          timeString = "0";
 
-      if((time / SECOND) % SEC_PER_MIN < 10)
-        timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
-      else
-        timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+          if(colon)
+            timeString = timeString.concat(":");
+          else
+            timeString = timeString.concat(" ");
+
+          if((time / SECOND) % SEC_PER_MIN < 10)
+            timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+          else
+            timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+          break;
+        case "SS":
+          if((time / SECOND) % SEC_PER_MIN < 10)
+            timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+          else
+            timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+          break;
+      }
 
       if(timeUnits)
         timeString = timeString.concat("s");
@@ -519,10 +552,22 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     //Process 0 or negative times
     else {
-      if(leadingZero)
-        timeString = "00:00";
-      else
-        timeString = "0:00";
+      switch(timeFormat) {
+        case "SS.d":
+          timeString = "00.0";
+          break;
+        case "0:SS":
+          if(leadingZero)
+            timeString = "0";
+          else
+            timeString = "";
+
+          timeString = timeString.concat("0:00");
+          break;
+        case "SS":
+          timeString = "00";
+          break;
+      }
 
       if(timeUnits)
         timeString = timeString.concat("s");
@@ -652,10 +697,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
     switch(key) {
       case "time_format":
-        timeFormat = prefs.getString("time_format", "SS:d");
+        timeFormat = prefs.getString("time_format", "SS.d");
         break;
-      case "time_rotations":
-        timeRotation = prefs.getString("time_format", "-90");
+      case "time_rotation":
+        timeRotation = prefs.getString("time_rotation", "-90");
         break;
       case "leading_zero":
         leadingZero = prefs.getBoolean("leading_zero", false);
@@ -674,8 +719,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
   public void getPreferences() {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    timeFormat = sharedPref.getString("time_format", "SS:d");
-    timeRotation = sharedPref.getString("time_format", "-90");
+    timeFormat = sharedPref.getString("time_format", "SS.d");
+    timeRotation = sharedPref.getString("time_rotation", "-90");
     leadingZero = sharedPref.getBoolean("leading_zero", false);
     blinkingColon = sharedPref.getBoolean("blinking_colon", true);
     timeUnits = sharedPref.getBoolean("time_units", true);

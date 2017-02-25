@@ -9,7 +9,7 @@
   </string-array>
 
   <string-array name="time_formats">
-    <item>SS:d</item>
+    <item>SS.d</item>
     <item>0:SS</item>
     <item>SS</item>
     <item>Always HH:MM:SS</item>

@@ -11,10 +11,59 @@
     android:text="Time Controls"
     android:textSize="20sp"/>
 
-  <Button
-    android:id="@+id/player1Time"
-    android:layout_width="wrap_content"
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:text="Player 1 Time"/>
+    android:orientation="horizontal">
+
+    <Button
+      android:id="@+id/player1Time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Player 1 Time"/>
+
+    <TextView
+      android:id="@+id/player1SelectedTime"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:orientation="horizontal">
+
+    <Button
+      android:id="@+id/player2Time"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Player 2 Time"/>
+
+    <TextView
+      android:id="@+id/player2SelectedTime"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="16dp">
+
+    <Button
+      android:id="@+id/applyButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Apply"/>
+
+    <Button
+      android:id="@+id/cancelButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Cancel"/>
+  </LinearLayout>
+
 </LinearLayout>

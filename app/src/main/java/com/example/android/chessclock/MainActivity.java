@@ -162,9 +162,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     sharedPref.registerOnSharedPreferenceChangeListener(this);
 
-
-    Log.d("jasLogs", leadingZero + " " + blinkingColon + " " + timeUnits + " " + timeFormat);
-
     setMode(MODE_INIT);
 
     //update times each 10 ms

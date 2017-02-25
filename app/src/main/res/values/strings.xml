@@ -2,6 +2,12 @@
   <string name="app_name">ChessClock</string>
   <string name="title_activity_settings">Settings</string>
 
+  <string-array name="time_rotations">
+    <item>-90</item>
+    <item>90</item>
+    <item>180 and 0</item>
+  </string-array>
+
   <string-array name="time_formats">
     <item>SS:d</item>
     <item>0:SS</item>

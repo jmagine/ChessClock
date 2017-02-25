@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import android.media.MediaPlayer;
 
-import android.util.Log;
-
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -70,17 +68,22 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   final int MODE_EDIT_TIME = 3;
 
   String timeFormat;
-  long[] initTimes;
+  String timeRotation;
+  long[] timeControl;
+  long[] increment;
   long topTime;
   long bottomTime;
   long tempTopTime;
   long tempBottomTime;
-  long initTopTime;
-  long initBottomTime;
+  long topDelay;
+  long bottomDelay;
+  long bronsteinTopTime;
+  long bronsteinBottomTime;
   int turn;               //turn to move
   int currMode;           //current clock mode
   int displayTimeModeTop;    //HOUR_MIN or MIN_SEC mode
   int displayTimeModeBottom; //HOUR_MIN or MIN_SEC mode
+  int incrementType;
   boolean playSounds;     //whether to play sounds
   boolean leadingZero;    //whether to display leading 0
   boolean blinkingColon;  //whether to blink colon
@@ -91,10 +94,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    //Create 2 ticking MediaPlayers, one for each button
     mp1 = MediaPlayer.create(this, R.raw.tick);
     mp2 = MediaPlayer.create(this, R.raw.tick);
 
-    //initialize all the ui elements
+    //Initialize all the ui elements and set listeners
     editTimeButtons = new Button[8];
     topTimeTV = (TextView) findViewById(R.id.topTime);
     bottomTimeTV = (TextView) findViewById(R.id.bottomTime);
@@ -133,50 +137,63 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     for(int i = 0; i < 8; i++)
       editTimeButtons[i].setOnTouchListener(this);
 
-    //TODO figure out all the intent stuff
-    //Need intent for setting time control
-
+    //Get time control from intent
     Bundle bundle = getIntent().getExtras();
 
     if(bundle != null) {
-      initTimes = bundle.getLongArray("times");
-      if(initTimes != null) {
-        initTopTime = initTimes[0];
-        initBottomTime = initTimes[1];
+      timeControl = bundle.getLongArray("times");
+      increment = bundle.getLongArray("increment");
+      incrementType = bundle.getInt("increment_type");
+
+      if(timeControl == null) {
+        timeControl = new long[2];
+        timeControl[0] = 0;
+        timeControl[1] = 1;
+      }
+
+      if(increment == null) {
+        increment = new long[2];
+        increment[0] = 0;
+        increment[1] = 0;
       }
     }
     else {
-      initTopTime    = 0 * HOUR + 0 * MINUTE + 1 * SECOND;
-      initBottomTime = 0 * HOUR + 0 * MINUTE + 1 * SECOND;
+      timeControl = new long[2];
+      timeControl[0] = 0 * HOUR + 5 * MINUTE + 0 * SECOND;
+      timeControl[1] = 0 * HOUR + 5 * MINUTE + 0 * SECOND;
+      increment = new long[2];
+      increment[0] = 0;
+      increment[1] = 0;
+      incrementType = Constants.DELAY;
     }
 
-    playSounds = true;
-
+    //Get preferences and set default values if not set
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-
-    leadingZero = sharedPref.getBoolean("leading_zero", leadingZero);
-    blinkingColon = sharedPref.getBoolean("blinking_colon", blinkingColon);
-    timeUnits = sharedPref.getBoolean("time_units", timeUnits);
-    timeFormat = sharedPref.getString("time_format", timeFormat);
-
+    getPreferences();
     sharedPref.registerOnSharedPreferenceChangeListener(this);
 
     setMode(MODE_INIT);
 
-    //update times each 10 ms
+    //Update times each 10 ms
     Timer t = new Timer();
     t.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
         if(turn == PLAYER_TOP) {
-          topTime -= 10;
+          if(topDelay > 0)
+            topDelay -= 10;
+          else
+            topTime -= 10;
         }
         else if(turn == PLAYER_BOT) {
-          bottomTime -= 10;
+          if(bottomDelay > 0)
+            bottomDelay -= 10;
+          else
+            bottomTime -= 10;
         }
 
-        updateTimes();
+        updateUI();
       }
     }, 10, 10);
   }
@@ -195,6 +212,26 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         else               bottomButton.setBackgroundColor(0xFFFF4444);
         if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
         else               topButton.setBackgroundColor(0xFFFF4444);
+
+        if(currMode == MODE_INIT || turn == PLAYER_TOP) {
+          switch (incrementType) {
+            case Constants.DELAY:
+              bottomDelay = increment[1];
+              break;
+            case Constants.FISCHER:
+              bottomTime += increment[1];
+              break;
+            case Constants.BRONSTEIN:
+              topTime += increment[0];
+
+              if (topTime > bronsteinTopTime)
+                topTime = bronsteinTopTime;
+
+              bronsteinBottomTime = bottomTime;
+              break;
+          }
+        }
+
         turn = PLAYER_BOT;
         setMode(MODE_PLAY);
         break;
@@ -206,13 +243,35 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         else               bottomButton.setBackgroundColor(0xFFFF4444);
         if(topTime > 0)    topButton.setBackgroundColor(0xFF00CCCC);
         else               topButton.setBackgroundColor(0xFFFF4444);
+
+        if(currMode == MODE_INIT || turn == PLAYER_BOT) {
+          switch (incrementType) {
+            case Constants.DELAY:
+              topDelay = increment[0];
+              break;
+            case Constants.FISCHER:
+              topTime += increment[0];
+              break;
+            case Constants.BRONSTEIN:
+              bottomTime += increment[1];
+
+              if (bottomTime > bronsteinBottomTime)
+                bottomTime = bronsteinBottomTime;
+
+              bronsteinTopTime = topTime;
+              break;
+          }
+        }
         turn = PLAYER_TOP;
         setMode(MODE_PLAY);
         break;
       case R.id.controlButton1:
         if(currMode == MODE_INIT) {
-          Intent myIntent = new Intent(controlButton1.getContext(), TimeSelectorActivity.class);
-          startActivityForResult(myIntent, 0);
+          Intent intent = new Intent(controlButton1.getContext(), TimeSelectorActivity.class);
+          intent.putExtra("times", timeControl);
+          intent.putExtra("increment", increment);
+          intent.putExtra("increment_type", incrementType);
+          startActivityForResult(intent, 0);
         }
         else if(currMode == MODE_PLAY || currMode == MODE_PAUSE)
           setMode(MODE_INIT);
@@ -230,10 +289,18 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           setMode(MODE_PAUSE);
         break;
       case R.id.soundButton:
-        if(playSounds)
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        if(playSounds) {
           playSounds = false;
-        else
+          editor.putBoolean("sound", false);
+        }
+        else {
           playSounds = true;
+          editor.putBoolean("sound", true);
+        }
+        editor.commit();
         break;
       case R.id.settingsButton:
         Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
@@ -306,7 +373,53 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     return false;
   }
 
-  public void updateTimes() {
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    mp1 = MediaPlayer.create(this, R.raw.tick);
+    mp2 = MediaPlayer.create(this, R.raw.tick);
+
+    getPreferences();
+  }
+
+  @Override
+  protected void onRestart() {
+    super.onRestart();
+
+    if(mp1 == null)
+      mp1 = MediaPlayer.create(this, R.raw.tick);
+    if(mp2 == null)
+      mp2 = MediaPlayer.create(this, R.raw.tick);
+
+    getPreferences();
+
+    setMode(MODE_INIT);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    if(mp1 != null)
+      mp1.release();
+
+    if(mp2 != null)
+      mp2.release();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+
+    if(mp1 != null)
+      mp1.release();
+
+    if(mp2 != null)
+      mp2.release();
+  }
+
+  public void updateUI() {
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -418,8 +531,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   }
 
   public void resetTimes() {
-    topTime = initTopTime;
-    bottomTime = initBottomTime;
+    topTime = timeControl[0];
+    bottomTime = timeControl[1];
   }
 
   public void revertChanges() {
@@ -449,6 +562,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         turn = PAUSE;
         resetTimes();
+
+        bronsteinTopTime = topTime;
+        bronsteinBottomTime = bottomTime;
 
         //if out of time, button is still red. otherwise unpressed color
         if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
@@ -533,9 +649,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     currMode = mode;
   }
 
-  public void onSharedPreferenceChanged(SharedPreferences prefs,
-                                        String key) {
+  public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
     switch(key) {
+      case "time_format":
+        timeFormat = prefs.getString("time_format", "SS:d");
+        break;
+      case "time_rotations":
+        timeRotation = prefs.getString("time_format", "-90");
+        break;
       case "leading_zero":
         leadingZero = prefs.getBoolean("leading_zero", false);
         break;
@@ -545,64 +666,20 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       case "time_units":
         timeUnits = prefs.getBoolean("time_units", false);
         break;
-      case "time_format":
-        timeFormat = prefs.getString("time_format", "SS:d");
-        break;
+      case "sound":
+        playSounds = prefs.getBoolean("sound", true);
     }
 
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    mp1 = MediaPlayer.create(this, R.raw.tick);
-    mp2 = MediaPlayer.create(this, R.raw.tick);
-
+  public void getPreferences() {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    sharedPref.getBoolean("leading_zero", leadingZero);
-    sharedPref.getBoolean("blinking_colon", blinkingColon);
-    sharedPref.getBoolean("time_units", timeUnits);
-    sharedPref.getString("time_format", timeFormat);
+    timeFormat = sharedPref.getString("time_format", "SS:d");
+    timeRotation = sharedPref.getString("time_format", "-90");
+    leadingZero = sharedPref.getBoolean("leading_zero", false);
+    blinkingColon = sharedPref.getBoolean("blinking_colon", true);
+    timeUnits = sharedPref.getBoolean("time_units", true);
+    playSounds = sharedPref.getBoolean("sound", true);
   }
 
-  @Override
-  protected void onRestart() {
-    super.onRestart();
-
-    if(mp1 == null)
-      mp1 = MediaPlayer.create(this, R.raw.tick);
-    if(mp2 == null)
-      mp2 = MediaPlayer.create(this, R.raw.tick);
-
-    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    sharedPref.getBoolean("leading_zero", leadingZero);
-    sharedPref.getBoolean("blinking_colon", blinkingColon);
-    sharedPref.getBoolean("time_units", timeUnits);
-    sharedPref.getString("time_format", timeFormat);
-
-    setMode(MODE_INIT);
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-
-    if(mp1 != null)
-      mp1.release();
-
-    if(mp2 != null)
-      mp2.release();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-
-    if(mp1 != null)
-      mp1.release();
-
-    if(mp2 != null)
-      mp2.release();
-  }
 }

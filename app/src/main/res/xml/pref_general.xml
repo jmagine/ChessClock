@@ -18,6 +18,15 @@
       android:positiveButtonText="@null"
       android:title="Select Time Format"/>
 
+    <ListPreference
+      android:defaultValue="-90"
+      android:entries="@array/time_rotations"
+      android:entryValues="@array/time_rotations"
+      android:key="time_rotation"
+      android:negativeButtonText="@null"
+      android:positiveButtonText="@null"
+      android:title="Time Rotation"/>
+
     <SwitchPreference
       android:defaultValue="true"
       android:key="blinking_colon"
@@ -31,10 +40,21 @@
       android:title="Leading Zero"/>
 
     <SwitchPreference
-      android:defaultValue="false"
+      android:defaultValue="true"
       android:key="time_units"
       android:summary="Display unit after time"
       android:title="Time Units"/>
+
+  </PreferenceCategory>
+
+  <PreferenceCategory
+    android:key="sound"
+    android:title="Sound">
+
+    <SwitchPreference
+      android:defaultValue="true"
+      android:key="sound"
+      android:title="Sound On"/>
   </PreferenceCategory>
 
 </PreferenceScreen>

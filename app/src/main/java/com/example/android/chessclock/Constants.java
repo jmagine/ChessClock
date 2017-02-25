@@ -9,4 +9,9 @@ public class Constants {
   final static long HOUR = 3600000;
   final static long MINUTE = 60000;
   final static long SECOND = 1000;
+
+  //increment types
+  final static int FISCHER = 0;
+  final static int DELAY = 1;
+  final static int BRONSTEIN = 2;
 }

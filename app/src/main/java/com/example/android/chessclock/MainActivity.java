@@ -27,17 +27,17 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   MediaPlayer mp1;
   MediaPlayer mp2;
 
-  Button[] editTimeButtons;
+  ImageView[] editTimeButtons;
   Button topButton;
   Button bottomButton;
   ImageView controlButton1;
   ImageView controlButton2;
   ImageView soundButton;
   ImageView settingsButton;
-  Button topEditTimeModeUp;
-  Button topEditTimeModeDown;
-  Button bottomEditTimeModeUp;
-  Button bottomEditTimeModeDown;
+  ImageView topEditTimeModeUp;
+  ImageView topEditTimeModeDown;
+  ImageView bottomEditTimeModeUp;
+  ImageView bottomEditTimeModeDown;
   ImageView topFirstFlag;
   ImageView bottomFirstFlag;
   TextView topTimeTV;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     mp2 = MediaPlayer.create(this, R.raw.tick);
 
     //Initialize all the ui elements and set listeners
-    editTimeButtons = new Button[8];
+    editTimeButtons = new ImageView[8];
     topTimeTV = (TextView) findViewById(R.id.topTime);
     bottomTimeTV = (TextView) findViewById(R.id.bottomTime);
     topFirstFlag = (ImageView) findViewById(R.id.topFirstFlag);
@@ -111,18 +111,18 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     controlButton2 = (ImageView) findViewById(R.id.controlButton2);
     soundButton = (ImageView) findViewById(R.id.soundButton);
     settingsButton = (ImageView) findViewById(R.id.settingsButton);
-    topEditTimeModeUp = (Button) findViewById(R.id.topEditTimeModeUp);
-    topEditTimeModeDown = (Button) findViewById(R.id.topEditTimeModeDown);
-    bottomEditTimeModeUp = (Button) findViewById(R.id.bottomEditTimeModeUp);
-    bottomEditTimeModeDown = (Button) findViewById(R.id.bottomEditTimeModeDown);
-    editTimeButtons[0] = (Button) findViewById(R.id.editTimeTop1Up);
-    editTimeButtons[1] = (Button) findViewById(R.id.editTimeTop2Up);
-    editTimeButtons[2] = (Button) findViewById(R.id.editTimeBottom1Up);
-    editTimeButtons[3] = (Button) findViewById(R.id.editTimeBottom2Up);
-    editTimeButtons[4] = (Button) findViewById(R.id.editTimeTop1Down);
-    editTimeButtons[5] = (Button) findViewById(R.id.editTimeTop2Down);
-    editTimeButtons[6] = (Button) findViewById(R.id.editTimeBottom1Down);
-    editTimeButtons[7] = (Button) findViewById(R.id.editTimeBottom2Down);
+    topEditTimeModeUp = (ImageView) findViewById(R.id.topEditTimeModeUp);
+    topEditTimeModeDown = (ImageView) findViewById(R.id.topEditTimeModeDown);
+    bottomEditTimeModeUp = (ImageView) findViewById(R.id.bottomEditTimeModeUp);
+    bottomEditTimeModeDown = (ImageView) findViewById(R.id.bottomEditTimeModeDown);
+    editTimeButtons[0] = (ImageView) findViewById(R.id.editTimeTop1Up);
+    editTimeButtons[1] = (ImageView) findViewById(R.id.editTimeTop2Up);
+    editTimeButtons[2] = (ImageView) findViewById(R.id.editTimeBottom1Up);
+    editTimeButtons[3] = (ImageView) findViewById(R.id.editTimeBottom2Up);
+    editTimeButtons[4] = (ImageView) findViewById(R.id.editTimeTop1Down);
+    editTimeButtons[5] = (ImageView) findViewById(R.id.editTimeTop2Down);
+    editTimeButtons[6] = (ImageView) findViewById(R.id.editTimeBottom1Down);
+    editTimeButtons[7] = (ImageView) findViewById(R.id.editTimeBottom2Down);
 
     topButton.setOnTouchListener(this);
     bottomButton.setOnTouchListener(this);

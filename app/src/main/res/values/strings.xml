@@ -12,7 +12,7 @@
     <item>SS.d</item>
     <item>0:SS</item>
     <item>SS</item>
-    <item>Always HH:MM:SS</item>
+    <!-- <item>Always HH:MM:SS</item> -->
   </string-array>
   <!-- Strings related to Settings -->
 

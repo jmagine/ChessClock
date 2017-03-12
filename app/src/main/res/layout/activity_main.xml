@@ -52,31 +52,31 @@
         android:orientation="vertical"
         android:gravity="center"
         android:elevation="10dp">
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeTop1Up"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="90"/>
 
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeTop2Up"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="90"/>
       </LinearLayout>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/topEditTimeModeUp"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:elevation="10dp"
-        android:src="@drawable/downarrow"/>
+        android:background="@drawable/downarrow"/>
 
       <ImageView
         android:id="@+id/topFirstFlag"
@@ -89,12 +89,12 @@
         android:elevation="10dp"
         android:background="#ff0000"/>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/topEditTimeModeDown"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:elevation="10dp"
-        android:src="@drawable/downarrow"
+        android:background="@drawable/downarrow"
         android:rotation="180"
         android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/topEditTimeModeUp"
@@ -110,20 +110,20 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true">
 
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeTop1Down"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="-90"/>
 
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeTop2Down"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="-90"/>
       </LinearLayout>
 
@@ -136,39 +136,43 @@
       android:layout_weight="1"
       android:orientation="horizontal">
 
-      <ImageView
+      <ImageButton
         android:id="@+id/controlButton1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="8dp"
+        android:background="#000"
         android:src="@drawable/reset"
         android:scaleType="fitCenter"/>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/controlButton2"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="8dp"
+        android:background="#000"
         android:src="@drawable/pause"
         android:scaleType="fitCenter"/>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/soundButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="8dp"
+        android:background="#000"
         android:src="@drawable/sound_on"
         android:scaleType="fitCenter"/>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/settingsButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="8dp"
+        android:background="#000"
         android:src="@drawable/settings_gear"
         android:scaleType="fitCenter"/>
 
@@ -185,19 +189,19 @@
         android:orientation="vertical"
         android:gravity="center"
         android:elevation="10dp">
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeBottom1Up"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="90"/>
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeBottom2Up"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="90"/>
       </LinearLayout>
 
@@ -209,19 +213,19 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:elevation="10dp">
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeBottom1Down"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="-90"/>
-        <ImageView
+        <ImageButton
           android:id="@+id/editTimeBottom2Down"
           android:layout_width="48dp"
           android:layout_height="48dp"
           android:layout_margin="16dp"
-          android:src="@drawable/downarrow"
+          android:background="@drawable/downarrow"
           android:rotation="-90"/>
       </LinearLayout>
 
@@ -249,23 +253,23 @@
         android:elevation="10dp"
         android:background="#ff0000"/>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/bottomEditTimeModeDown"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
         android:elevation="10dp"
-        android:src="@drawable/downarrow"
+        android:background="@drawable/downarrow"
         android:rotation="180"/>
 
-      <ImageView
+      <ImageButton
         android:id="@+id/bottomEditTimeModeUp"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:elevation="10dp"
-        android:src="@drawable/downarrow"
+        android:background="@drawable/downarrow"
         android:rotation="0"/>
 
       <Button

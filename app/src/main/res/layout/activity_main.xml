@@ -141,7 +141,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="12dp"
         android:background="#000"
         android:src="@drawable/reset"
         android:scaleType="fitCenter"/>
@@ -151,7 +151,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="12dp"
         android:background="#000"
         android:src="@drawable/pause"
         android:scaleType="fitCenter"/>
@@ -161,7 +161,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="12dp"
         android:background="#000"
         android:src="@drawable/sound_on"
         android:scaleType="fitCenter"/>
@@ -171,7 +171,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="8dp"
+        android:padding="10dp"
         android:background="#000"
         android:src="@drawable/settings_gear"
         android:scaleType="fitCenter"/>

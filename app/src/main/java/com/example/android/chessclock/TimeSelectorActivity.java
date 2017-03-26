@@ -6,8 +6,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -224,34 +226,29 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         break;
       case R.id.applyButton:
         initTimes[0] = playerTopTime;
-        if(enablePlayer2)
-          initTimes[1] = playerBottomTime;
-        else
-          initTimes[1] = playerTopTime;
+        if(enablePlayer2) initTimes[1] = playerBottomTime;
+        else              initTimes[1] = playerTopTime;
 
         increment[0] = playerTopIncrement;
-        if(enablePlayer2)
-          increment[1] = playerBottomIncrement;
-        else
-          increment[1] = playerTopIncrement;
+        if(enablePlayer2) increment[1] = playerBottomIncrement;
+        else              increment[1] = playerTopIncrement;
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong("curr_time_p1", initTimes[0]);
+        editor.putLong("curr_time_p2", initTimes[1]);
+        editor.putLong("time_control_p1", initTimes[0]);
+        editor.putLong("time_control_p2", initTimes[1]);
+        editor.putLong("time_inc_p1", increment[0]);
+        editor.putLong("time_inc_p2", increment[1]);
+        editor.putInt("inc_type", incrementType);
+        editor.apply();
 
         intent = new Intent(applyButton.getContext(), MainActivity.class);
-        intent.putExtra("times", initTimes);
-        intent.putExtra("increment", increment);
-        intent.putExtra("increment_type", incrementType);
         startActivityForResult(intent, 0);
         break;
       case R.id.cancelButton:
-        /*
-        initTimes[0] = playerTopTime;
-        initTimes[1] = playerBottomTime;
-        increment[0] = playerTopIncrement;
-        increment[1] = playerBottomIncrement;
-        */
         intent = new Intent(applyButton.getContext(), MainActivity.class);
-        intent.putExtra("times", initTimes);
-        intent.putExtra("increment", increment);
-        intent.putExtra("increment_type", incrementType);
         startActivityForResult(intent, 0);
         break;
       case R.id.sameTimes:

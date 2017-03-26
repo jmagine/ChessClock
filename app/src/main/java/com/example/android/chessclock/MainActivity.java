@@ -139,35 +139,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     for(int i = 0; i < 8; i++)
       editTimeButtons[i].setOnTouchListener(this);
 
-    //Get time control from intent
-    Bundle bundle = getIntent().getExtras();
-
-    if(bundle != null) {
-      timeControl = bundle.getLongArray("times");
-      increment = bundle.getLongArray("increment");
-      incrementType = bundle.getInt("increment_type");
-
-      if(timeControl == null) {
-        timeControl = new long[2];
-        timeControl[0] = 0;
-        timeControl[1] = 1;
-      }
-
-      if(increment == null) {
-        increment = new long[2];
-        increment[0] = 0;
-        increment[1] = 0;
-      }
-    }
-    else {
-      timeControl = new long[2];
-      timeControl[0] = 0 * HOUR + 5 * MINUTE + 0 * SECOND;
-      timeControl[1] = 0 * HOUR + 5 * MINUTE + 0 * SECOND;
-      increment = new long[2];
-      increment[0] = 0;
-      increment[1] = 0;
-      incrementType = Constants.DELAY;
-    }
+    //Initialize time control and increment arrays in preparation for shared preferences update
+    timeControl = new long[2];
+    increment = new long[2];
 
     //Get preferences and set default values if not set
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -279,14 +253,20 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         else if(currMode == MODE_PLAY || currMode == MODE_PAUSE)
           setMode(MODE_INIT);
         else if(currMode == MODE_EDIT_TIME)
-          setMode(MODE_PAUSE);
+          if(topTime == timeControl[0] && bottomTime == timeControl[1])
+            setMode(MODE_INIT);
+          else
+            setMode(MODE_PAUSE);
         break;
       case R.id.controlButton2:
         if(currMode == MODE_INIT || currMode == MODE_PAUSE)
           setMode(MODE_EDIT_TIME);
         else if(currMode == MODE_EDIT_TIME) {
           revertChanges();
-          setMode(MODE_PAUSE);
+          if(topTime == timeControl[0] && bottomTime == timeControl[1])
+            setMode(MODE_INIT);
+          else
+            setMode(MODE_PAUSE);
         }
         else
           setMode(MODE_PAUSE);
@@ -305,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           editor.putBoolean("sound", true);
           soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_on));
         }
-        editor.commit();
+        editor.apply();
         break;
       case R.id.settingsButton:
         Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
@@ -388,6 +368,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     displayTimeModeTop = DISP_AUTO;
     displayTimeModeBottom = DISP_AUTO;
     getPreferences();
+
+    if(topTime == timeControl[0] && bottomTime == timeControl[1])
+      setMode(MODE_INIT);
+    else
+      setMode(MODE_PAUSE);
   }
 
   @Override
@@ -409,6 +394,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   protected void onPause() {
     super.onPause();
 
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    SharedPreferences.Editor editor = sharedPref.edit();
+    editor.putLong("curr_time_p1", topTime);
+    editor.putLong("curr_time_p2", bottomTime);
+
+    editor.apply();
+
     if(mp1 != null)
       mp1.release();
 
@@ -419,6 +411,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   @Override
   protected void onStop() {
     super.onStop();
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    SharedPreferences.Editor editor = sharedPref.edit();
+    editor.putLong("time_p1", topTime);
+    editor.putLong("time_p2", bottomTime);
+
+    editor.apply();
 
     if(mp1 != null)
       mp1.release();
@@ -435,6 +434,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           case "-90":
             topTimeTV.setRotation(-90);
             bottomTimeTV.setRotation(-90);
+
             break;
           case "90":
             topTimeTV.setRotation(90);
@@ -479,20 +479,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     String timeString = "";
     //Process HH:MM format times
     if((time >= HOUR || displayMode == DISP_HOUR_MIN) && (displayMode != DISP_MIN_SEC)) {
-      if(time / HOUR < 10 && leadingZero)
-        timeString = timeString.concat("0" + time / HOUR);
-      else
-        timeString = timeString.concat("" + time / HOUR);
+      if(time / HOUR < 10 && leadingZero) timeString = timeString.concat("0" + time / HOUR);
+      else                                timeString = timeString.concat("" + time / HOUR);
 
-      if(colon)
-        timeString = timeString.concat(":");
-      else
-        timeString = timeString.concat(" ");
+      if(colon) timeString = timeString.concat(":");
+      else      timeString = timeString.concat(" ");
 
-      if((time / MINUTE) % MIN_PER_HOUR < 10)
-        timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
-      else
-        timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
+      if((time / MINUTE) % MIN_PER_HOUR < 10) timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
+      else                                    timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
 
       if(timeUnits)
         timeString = timeString.concat("m");
@@ -500,59 +494,43 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     //Process MM:SS format times
     else if(time >= MINUTE || displayMode == DISP_MIN_SEC) {
-      if((time / MINUTE) % MIN_PER_HOUR < 10 && leadingZero)
-        timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
-      else
-        timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
+      if((time / MINUTE) % MIN_PER_HOUR < 10 && leadingZero) timeString = timeString.concat("0" + (time / MINUTE) % MIN_PER_HOUR);
+      else                                                   timeString = timeString.concat("" + (time / MINUTE) % MIN_PER_HOUR);
 
-      if(colon)
-        timeString = timeString.concat(":");
-      else
-        timeString = timeString.concat(" ");
+      if(colon) timeString = timeString.concat(":");
+      else      timeString = timeString.concat(" ");
 
-      if((time / SECOND) % SEC_PER_MIN < 10)
-        timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
-      else
-        timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+      if((time / SECOND) % SEC_PER_MIN < 10) timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+      else                                   timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
 
-      if(timeUnits)
-        timeString = timeString.concat("s");
+      if(timeUnits) timeString = timeString.concat("s");
     }
 
     //Process lower than 1 minute times
     else if(time > 0) {
       switch(timeFormat) {
         case "SS.d":
-          if((time / SECOND) % SEC_PER_MIN < 10)
-            timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
-          else
-            timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+          if((time / SECOND) % SEC_PER_MIN < 10) timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+          else                                   timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
 
           timeString = timeString.concat("." + (time / 100) % 10);
           break;
         case "0:SS":
           timeString = "0";
 
-          if(colon)
-            timeString = timeString.concat(":");
-          else
-            timeString = timeString.concat(" ");
+          if(colon) timeString = timeString.concat(":");
+          else      timeString = timeString.concat(" ");
 
-          if((time / SECOND) % SEC_PER_MIN < 10)
-            timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
-          else
-            timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+          if((time / SECOND) % SEC_PER_MIN < 10) timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+          else                                   timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
           break;
         case "SS":
-          if((time / SECOND) % SEC_PER_MIN < 10)
-            timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
-          else
-            timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
+          if((time / SECOND) % SEC_PER_MIN < 10) timeString = timeString.concat("0" + (time / SECOND) % SEC_PER_MIN);
+          else                                   timeString = timeString.concat("" + (time / SECOND) % SEC_PER_MIN);
           break;
       }
 
-      if(timeUnits)
-        timeString = timeString.concat("s");
+      if(timeUnits) timeString = timeString.concat("s");
     }
 
     //Process 0 or negative times
@@ -562,10 +540,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           timeString = "00.0";
           break;
         case "0:SS":
-          if(leadingZero)
-            timeString = "0";
-          else
-            timeString = "";
+          if(leadingZero) timeString = "0";
+          else            timeString = "";
 
           timeString = timeString.concat("0:00");
           break;
@@ -574,8 +550,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           break;
       }
 
-      if(timeUnits)
-        timeString = timeString.concat("s");
+      if(timeUnits) timeString = timeString.concat("s");
     }
     return timeString;
   }
@@ -595,6 +570,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     switch(mode) {
       case MODE_INIT:
 
+        //Update UI
         topButton.setVisibility(View.VISIBLE);
         bottomButton.setVisibility(View.VISIBLE);
         topFirstFlag.setVisibility(View.INVISIBLE);
@@ -605,14 +581,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         bottomEditTimeModeUp.setVisibility(View.INVISIBLE);
         bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
 
-        //controlButton1.setText("Time Control");
-        //controlButton2.setText("Edit Time");
-
         controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.plus));
         controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.edit_time));
 
         for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.INVISIBLE);
 
+        //Update Model
         turn = PAUSE;
         resetTimes();
 
@@ -628,9 +602,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       case MODE_PLAY:
         topButton.setVisibility(View.VISIBLE);
         bottomButton.setVisibility(View.VISIBLE);
-
-        //controlButton1.setText("Reset");
-        //controlButton2.setText("Pause");
 
         controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.reset));
         controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.pause));
@@ -651,10 +622,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         else               topButton.setBackgroundColor(0xFFFF4444);
         if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
         else               bottomButton.setBackgroundColor(0xFFFF4444);
-
-
-        //controlButton1.setText("Reset");
-        //controlButton2.setText("Edit Time");
 
         controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.reset));
         controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.edit_time));
@@ -692,9 +659,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           bottomEditTimeModeDown.setVisibility(View.VISIBLE);
           displayTimeModeBottom = DISP_HOUR_MIN;
         }
-
-        //controlButton1.setText("Apply");
-        //controlButton2.setText("Cancel");
 
         controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.apply));
         controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.cancel));
@@ -742,6 +706,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     blinkingColon = sharedPref.getBoolean("blinking_colon", true);
     timeUnits = sharedPref.getBoolean("time_units", true);
     playSounds = sharedPref.getBoolean("sound", true);
+    timeControl[0] = sharedPref.getLong("time_control_p1", 5 * MINUTE);
+    timeControl[1] = sharedPref.getLong("time_control_p2", 5 * MINUTE);
+    increment[0] = sharedPref.getLong("time_inc_p1", 0);
+    increment[1] = sharedPref.getLong("time_inc_p2", 0);
+    topTime = sharedPref.getLong("curr_time_p1", 5 * MINUTE);
+    bottomTime = sharedPref.getLong("curr_time_p2", 5 * MINUTE);
+    incrementType = sharedPref.getInt("inc_type", Constants.DELAY);
 
     if(playSounds)
       soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_on));

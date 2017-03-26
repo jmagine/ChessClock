@@ -54,5 +54,4 @@
       android:key="sound"
       android:title="Sound On"/>
   </PreferenceCategory>
-
 </PreferenceScreen>

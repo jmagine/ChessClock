@@ -158,16 +158,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       @Override
       public void run() {
         if(turn == PLAYER_TOP) {
-          if(topDelay > 0)
-            topDelay -= 10;
-          else
-            topTime -= 10;
+          if(topDelay > 0) topDelay -= 10;
+          else             topTime -= 10;
         }
         else if(turn == PLAYER_BOT) {
-          if(bottomDelay > 0)
-            bottomDelay -= 10;
-          else
-            bottomTime -= 10;
+          if(bottomDelay > 0) bottomDelay -= 10;
+          else                bottomTime -= 10;
         }
 
         updateUI();

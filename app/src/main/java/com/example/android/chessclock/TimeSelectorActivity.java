@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -30,10 +31,8 @@ import android.widget.TextView;
  */
 
 public class TimeSelectorActivity extends AppCompatActivity implements View.OnClickListener{
-  static int fragmentMode;
-  static int playerTopTime;
-  static int playerBottomTime;
-  static int selectedTime;
+  static long  playerTopTime;
+  static long playerBottomTime;
   static long playerTopIncrement;
   static long playerBottomIncrement;
 
@@ -43,15 +42,22 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
 
   static boolean enablePlayer2;
 
+  LinearLayout player2TimeSelection;
+
   TextView player1Text;
   TextView player2Text;
 
-  Button topTime;
-  Button bottomTime;
-  Button topIncrement;
-  Button bottomIncrement;
   Button applyButton;
   Button cancelButton;
+
+  NumberPicker hourPicker1;
+  NumberPicker minPicker1;
+  NumberPicker secPicker1;
+  NumberPicker incPicker1;
+  NumberPicker hourPicker2;
+  NumberPicker minPicker2;
+  NumberPicker secPicker2;
+  NumberPicker incPicker2;
 
   CheckBox sameTimes;
 
@@ -64,54 +70,27 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_time_selector);
 
-    Bundle bundle = getIntent().getExtras();
-
-    if(bundle != null) {
-      initTimes = bundle.getLongArray("times");
-      increment = bundle.getLongArray("increment");
-      incrementType = bundle.getInt("increment_type");
-
-      if(initTimes == null) {
-        initTimes = new long[2];
-        initTimes[0] = 0;
-        initTimes[1] = 0;
-      }
-
-      if(increment == null) {
-        increment = new long[2];
-        increment[0] = 0;
-        increment[1] = 0;
-      }
-    }
-    else {
-      initTimes = new long[2];
-      initTimes[0] = 0;
-      initTimes[1] = 0;
-      increment = new long[2];
-      increment[0] = 0;
-      increment[1] = 0;
-      incrementType = Constants.DELAY;
-    }
-
-    //SharedPreferences
-
+    player2TimeSelection = (LinearLayout) findViewById(R.id.player2TimeSelection);
     player1Text = (TextView) findViewById(R.id.player1Text);
     player2Text = (TextView) findViewById(R.id.player2Text);
 
-    topTime = (Button) findViewById(R.id.player1Time);
-    bottomTime = (Button) findViewById(R.id.player2Time);
-    topIncrement = (Button) findViewById(R.id.player1Increment);
-    bottomIncrement = (Button) findViewById(R.id.player2Increment);
     applyButton = (Button) findViewById(R.id.applyButton);
     cancelButton = (Button) findViewById(R.id.cancelButton);
     sameTimes = (CheckBox) findViewById(R.id.sameTimes);
     incFischer = (RadioButton) findViewById(R.id.incFischer);
     incDelay = (RadioButton) findViewById(R.id.incDelay);
     incBronstein = (RadioButton) findViewById(R.id.incBronstein);
-    topTime.setOnClickListener(this);
-    bottomTime.setOnClickListener(this);
-    topIncrement.setOnClickListener(this);
-    bottomIncrement.setOnClickListener(this);
+
+    hourPicker1 = (NumberPicker) findViewById(R.id.hourPicker1);
+    minPicker1 = (NumberPicker) findViewById(R.id.minPicker1);
+    secPicker1 = (NumberPicker) findViewById(R.id.secPicker1);
+    incPicker1 = (NumberPicker) findViewById(R.id.incPicker1);
+
+    hourPicker2 = (NumberPicker) findViewById(R.id.hourPicker2);
+    minPicker2 = (NumberPicker) findViewById(R.id.minPicker2);
+    secPicker2 = (NumberPicker) findViewById(R.id.secPicker2);
+    incPicker2 = (NumberPicker) findViewById(R.id.incPicker2);
+
     applyButton.setOnClickListener(this);
     cancelButton.setOnClickListener(this);
     sameTimes.setOnClickListener(this);
@@ -119,83 +98,36 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     incDelay.setOnClickListener(this);
     incBronstein.setOnClickListener(this);
 
-    setSameTime(false);
-  }
+    hourPicker1.setMaxValue(99);
+    hourPicker1.setMinValue(0);
+    minPicker1.setMaxValue(59);
+    minPicker1.setMinValue(0);
+    secPicker1.setMaxValue(59);
+    secPicker1.setMinValue(0);
+    incPicker1.setMaxValue(59);
+    incPicker1.setMinValue(0);
 
-  public static class HourMinSecPickerFragment extends DialogFragment {
+    hourPicker2.setMaxValue(99);
+    hourPicker2.setMinValue(0);
+    minPicker2.setMaxValue(59);
+    minPicker2.setMinValue(0);
+    secPicker2.setMaxValue(59);
+    secPicker2.setMinValue(0);
+    incPicker2.setMaxValue(60);
+    incPicker2.setMinValue(0);
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-      //return super.onCreateDialog(savedInstanceState);
-      LayoutInflater inflater = getActivity().getLayoutInflater();
+    hourPicker1.setValue(0);
 
-      View v = inflater.inflate(R.layout.time_selector_hms, null);
-      final NumberPicker hourPicker = (NumberPicker) v.findViewById(R.id.hourPicker);
-      final NumberPicker minPicker = (NumberPicker) v.findViewById(R.id.minPicker);
-      final NumberPicker secPicker = (NumberPicker) v.findViewById(R.id.secPicker);
-      final TextView hourText = (TextView) v.findViewById(R.id.hourText);
-      final TextView minuteText = (TextView) v.findViewById(R.id.minuteText);
+    //SharedPreferences
+    getPreferences();
 
-      hourPicker.setMaxValue(99);
-      hourPicker.setMinValue(0);
-      minPicker.setMaxValue(59);
-      minPicker.setMinValue(0);
-      secPicker.setMaxValue(59);
-      secPicker.setMinValue(0);
-
-      if(fragmentMode > 1) {
-        hourPicker.setVisibility(View.INVISIBLE);
-        minPicker.setVisibility(View.INVISIBLE);
-        hourText.setVisibility(View.INVISIBLE);
-        minuteText.setVisibility(View.INVISIBLE);
-      }
-      else {
-        hourPicker.setVisibility(View.VISIBLE);
-        minPicker.setVisibility(View.VISIBLE);
-        hourText.setVisibility(View.VISIBLE);
-        minuteText.setVisibility(View.VISIBLE);
-      }
-
-      return new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustomTheme)
-            .setTitle("Set Player Time")
-            .setView(v)
-            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-                selectedTime = 0;
-                selectedTime += hourPicker.getValue() * Constants.HOUR;
-                selectedTime += minPicker.getValue() * Constants.MINUTE;
-                selectedTime += secPicker.getValue() * Constants.SECOND;
-
-                switch(fragmentMode) {
-                  case 0:
-                    playerTopTime = selectedTime;
-
-                    if(!enablePlayer2)
-                      playerBottomTime = selectedTime;
-                    break;
-                  case 1:
-                    playerBottomTime = selectedTime;
-                    break;
-                  case 2:
-                    playerTopIncrement = selectedTime;
-
-                    if(!enablePlayer2)
-                      playerBottomIncrement = selectedTime;
-                    break;
-                  case 3:
-                    playerBottomIncrement = selectedTime;
-                    break;
-                }
-              }
-            })
-            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-
-              }
-            })
-            .create();
+    if (playerTopTime == playerBottomTime && playerTopIncrement == playerBottomIncrement) {
+      setSameTime(true);
+      sameTimes.setChecked(true);
+    }
+    else {
+      setSameTime(false);
+      sameTimes.setChecked(false);
     }
   }
 
@@ -204,34 +136,34 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     Intent intent;
 
     switch(v.getId()) {
-      case R.id.player1Time:
-        fragmentMode = 0;
-        HourMinSecPickerFragment topTimeFragment = new HourMinSecPickerFragment();
-        topTimeFragment.show(getFragmentManager(), "Top Time");
-        break;
-      case R.id.player2Time:
-        fragmentMode = 1;
-        HourMinSecPickerFragment bottomTimeFragment = new HourMinSecPickerFragment();
-        bottomTimeFragment.show(getFragmentManager(), "Bottom Time");
-        break;
-      case R.id.player1Increment:
-        fragmentMode = 2;
-        HourMinSecPickerFragment topIncrementFragment = new HourMinSecPickerFragment();
-        topIncrementFragment.show(getFragmentManager(), "Top Increment");
-        break;
-      case R.id.player2Increment:
-        fragmentMode = 3;
-        HourMinSecPickerFragment bottomIncrementFragment = new HourMinSecPickerFragment();
-        bottomIncrementFragment.show(getFragmentManager(), "Bottom Increment");
-        break;
       case R.id.applyButton:
+
+        playerTopTime = 0;
+        playerTopTime += hourPicker1.getValue() * Constants.HOUR;
+        playerTopTime += minPicker1.getValue() * Constants.MINUTE;
+        playerTopTime += secPicker1.getValue() * Constants.SECOND;
+        playerTopIncrement = incPicker1.getValue() * Constants.SECOND;
+
+        if(enablePlayer2) {
+          playerBottomTime = 0;
+          playerBottomTime += hourPicker2.getValue() * Constants.HOUR;
+          playerBottomTime += minPicker2.getValue() * Constants.MINUTE;
+          playerBottomTime += secPicker2.getValue() * Constants.SECOND;
+          playerBottomIncrement = incPicker2.getValue() * Constants.SECOND;
+        }
+        else {
+          playerBottomTime = playerTopTime;
+          playerBottomIncrement = playerTopIncrement;
+        }
+
+        initTimes = new long[2];
+        increment = new long[2];
+
         initTimes[0] = playerTopTime;
-        if(enablePlayer2) initTimes[1] = playerBottomTime;
-        else              initTimes[1] = playerTopTime;
+        initTimes[1] = playerBottomTime;
 
         increment[0] = playerTopIncrement;
-        if(enablePlayer2) increment[1] = playerBottomIncrement;
-        else              increment[1] = playerTopIncrement;
+        increment[1] = playerBottomIncrement;
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -268,18 +200,42 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
 
   public void setSameTime(boolean same) {
     enablePlayer2 = !same;
-    //bottomTime.setClickable(same);
-    bottomTime.setEnabled(!same);
-    //bottomIncrement.setClickable(same);
-    bottomIncrement.setEnabled(!same);
+    hourPicker2.setEnabled(!same);
+    minPicker2.setEnabled(!same);
+    secPicker2.setEnabled(!same);
+    incPicker2.setEnabled(!same);
 
     if(same) {
-      player1Text.setText("Time Settings");
-      player2Text.setAlpha(0.5f);
+      player1Text.setText("Both Times");
+      player2TimeSelection.setVisibility(View.GONE);
+      player2Text.setVisibility(View.GONE);
+
     }
     else {
-      player1Text.setText("Player 1");
-      player2Text.setAlpha(1);
+      player1Text.setText("Top Time");
+      player2TimeSelection.setVisibility(View.VISIBLE);
+      player2Text.setVisibility(View.VISIBLE);
     }
+  }
+
+  public void getPreferences() {
+    increment = new long[2];
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    playerTopTime = sharedPref.getLong("time_control_p1", 5 * Constants.MINUTE);
+    playerBottomTime = sharedPref.getLong("time_control_p2", 5 * Constants.MINUTE);
+    increment[0] = sharedPref.getLong("time_inc_p1", 0);
+    increment[1] = sharedPref.getLong("time_inc_p2", 0);
+    incrementType = sharedPref.getInt("inc_type", Constants.DELAY);
+
+    hourPicker1.setValue((int) (playerTopTime / Constants.HOUR));
+    minPicker1.setValue((int) ((playerTopTime % Constants.HOUR) / Constants.MINUTE));
+    secPicker1.setValue((int) ((playerTopTime % Constants.MINUTE) / Constants.SECOND));
+    incPicker1.setValue((int) increment[0]);
+
+    hourPicker2.setValue((int) (playerBottomTime / Constants.HOUR));
+    minPicker2.setValue((int) ((playerBottomTime % Constants.HOUR) / Constants.MINUTE));
+    secPicker2.setValue((int) ((playerBottomTime % Constants.MINUTE) / Constants.SECOND));
+    incPicker2.setValue((int) increment[1]);
   }
 }

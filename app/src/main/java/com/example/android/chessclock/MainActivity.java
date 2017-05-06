@@ -291,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         intent.putExtra( SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.GeneralPreferenceFragment.class.getName() );
         intent.putExtra( SettingsActivity.EXTRA_NO_HEADERS, true );
 
+        //old settings activity intent code
         //Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
         //startActivityForResult(myIntent, 0);
         startActivity(intent);

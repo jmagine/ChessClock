@@ -1,146 +1,278 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-  android:background="#000">
-  <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    android:text="Time Controls"
-    android:textSize="24sp"/>
-
-  <TextView
-    android:id="@+id/player1Text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:text="Player 1"
-    android:textSize="20sp"/>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
   <LinearLayout
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginBottom="16dp"
-    android:orientation="horizontal">
-
-    <Button
-      android:id="@+id/player1Time"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Time"/>
-
-    <Button
-      android:id="@+id/player1Increment"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Increment"/>
+    android:background="#000">
 
     <TextView
-      android:id="@+id/player1SelectedTime"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
-  </LinearLayout>
-
-  <TextView
-    android:id="@+id/player2Text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:text="Player 2"
-    android:textSize="20sp"/>
-
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginBottom="16dp"
-    android:orientation="horizontal">
-
-    <Button
-      android:id="@+id/player2Time"
-      android:layout_width="wrap_content"
+      android:id="@+id/textView"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="Time"/>
-
-    <Button
-      android:id="@+id/player2Increment"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Increment"/>
+      android:layout_margin="16dp"
+      android:text="Time Control Setter"
+      android:textSize="24sp" />
 
     <TextView
-      android:id="@+id/player2SelectedTime"
+      android:id="@+id/player1Text"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:text="Top Time"
+      android:textSize="20sp"/>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginLeft="16dp"
+      android:layout_marginBottom="16dp"
+      android:orientation="horizontal">
+
+      <NumberPicker
+        android:id="@+id/hourPicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/hourText1"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_marginRight="-4dp"
+        android:layout_marginEnd="-4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="hours"/>
+
+      <NumberPicker
+        android:id="@+id/minPicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/minuteText1"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="mins"/>
+
+      <NumberPicker
+        android:id="@+id/secPicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/secondText1"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="secs"/>
+
+      <NumberPicker
+        android:id="@+id/incPicker1"
+        android:layout_marginLeft="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/incText1"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="inc"/>
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/player2Text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:text="Bottom Time"
+      android:textSize="20sp"/>
+
+    <LinearLayout
+      android:id="@+id/player2TimeSelection"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginLeft="16dp"
+      android:layout_marginBottom="16dp"
+      android:orientation="horizontal">
+
+      <NumberPicker
+        android:id="@+id/hourPicker2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/hourText2"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_marginRight="-4dp"
+        android:layout_marginEnd="-4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="hours"/>
+
+      <NumberPicker
+        android:id="@+id/minPicker2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/minuteText2"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="mins"/>
+
+      <NumberPicker
+        android:id="@+id/secPicker2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/secondText2"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="secs"/>
+
+      <NumberPicker
+        android:id="@+id/incPicker2"
+        android:layout_marginLeft="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Holo"
+        android:descendantFocusability="blocksDescendants">
+
+      </NumberPicker>
+
+      <TextView
+        android:id="@+id/incText2"
+        android:layout_marginStart="-16dp"
+        android:layout_marginLeft="-16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="inc"/>
+    </LinearLayout>
+
+    <CheckBox
+      android:id="@+id/sameTimes"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginLeft="16dp"
+      android:layout_marginBottom="16dp"
+      android:checked="true"
+      android:text="Same Times"/>
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginLeft="16dp"
+      android:text="Increment Type"
+      android:textSize="20sp"/>
+
+    <RadioGroup
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:orientation="vertical">
+
+      <RadioButton
+        android:id="@+id/incFischer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fischer"
+        android:checked="true"/>
+
+
+      <RadioButton
+        android:id="@+id/incDelay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delay"/>
+
+      <RadioButton
+        android:id="@+id/incBronstein"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bronstein"/>
+
+    </RadioGroup>
+
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_margin="16dp">
+
+      <Button
+        android:id="@+id/applyButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_weight="1"
+        android:padding="0dp"
+        android:text="Apply" />
+
+      <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        android:text="Cancel"/>
+    </LinearLayout>
+
   </LinearLayout>
-
-  <CheckBox
-    android:id="@+id/sameTimes"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginBottom="16dp"
-    android:text="Same Times"/>
-
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginLeft="16dp"
-    android:text="Increment Type"
-    android:textSize="20sp"/>
-
-  <RadioGroup
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:orientation="vertical">
-
-    <RadioButton
-      android:id="@+id/incFischer"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Fischer"/>
-
-
-    <RadioButton
-      android:id="@+id/incDelay"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Delay"/>
-
-    <RadioButton
-      android:id="@+id/incBronstein"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Bronstein"/>
-
-  </RadioGroup>
-
-
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_margin="16dp">
-
-    <Button
-      android:id="@+id/applyButton"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Apply"/>
-
-    <Button
-      android:id="@+id/cancelButton"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Cancel"/>
-  </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

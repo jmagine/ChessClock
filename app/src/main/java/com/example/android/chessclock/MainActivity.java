@@ -1,5 +1,7 @@
 package com.example.android.chessclock;
 
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.preference.PreferenceManager;
 
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.prefs.Preferences;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener, OnSharedPreferenceChangeListener{
 
@@ -284,9 +287,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         editor.apply();
         break;
       case R.id.settingsButton:
-        Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
+        Intent intent = new Intent( this, SettingsActivity.class );
+        intent.putExtra( SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.GeneralPreferenceFragment.class.getName() );
+        intent.putExtra( SettingsActivity.EXTRA_NO_HEADERS, true );
+
+        //Intent myIntent = new Intent(settingsButton.getContext(), SettingsActivity.class);
         //startActivityForResult(myIntent, 0);
-        startActivity(myIntent);
+        startActivity(intent);
         break;
       //editTimeMode buttons, when 1 is pressed it gets hidden and other gets shown, then editTimeMode is set. don't forget to put in xml
       case R.id.topEditTimeModeUp:

@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
   final int MODE_PLAY      = 1;
   final int MODE_PAUSE     = 2;
   final int MODE_EDIT_TIME = 3;
+  final int MODE_RESET_CNF = 4;
 
   String timeFormat;
   String timeRotation;
@@ -249,8 +250,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
           intent.putExtra("increment_type", incrementType);
           startActivityForResult(intent, 0);
         }
-        else if(currMode == MODE_PLAY || currMode == MODE_PAUSE)
+        else if(currMode == MODE_RESET_CNF) {
           setMode(MODE_INIT);
+        }
+        else if(currMode == MODE_PLAY || currMode == MODE_PAUSE)
+          setMode(MODE_RESET_CNF);
         else if(currMode == MODE_EDIT_TIME)
           if(topTime == timeControl[0] && bottomTime == timeControl[1])
             setMode(MODE_INIT);
@@ -261,11 +265,15 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if(currMode == MODE_INIT || currMode == MODE_PAUSE)
           setMode(MODE_EDIT_TIME);
         else if(currMode == MODE_EDIT_TIME) {
-          revertChanges();
+           revertChanges();
+
           if(topTime == timeControl[0] && bottomTime == timeControl[1])
             setMode(MODE_INIT);
           else
             setMode(MODE_PAUSE);
+        }
+        else if(currMode == MODE_RESET_CNF) {
+          setMode(MODE_PAUSE);
         }
         else
           setMode(MODE_PAUSE);
@@ -673,6 +681,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.VISIBLE);
 
         turn = PAUSE;
+        break;
+      case MODE_RESET_CNF:
+        controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.apply));
+        controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.cancel));
         break;
     }
 

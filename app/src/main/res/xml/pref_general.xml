@@ -54,4 +54,13 @@
       android:key="sound"
       android:title="Sound On"/>
   </PreferenceCategory>
+  <!--
+  <PreferenceCategory
+    android:key="colors"
+    android:title="Colors">
+    <ListPreference>
+
+    </ListPreference>
+    </PreferenceCategory>
+  -->
 </PreferenceScreen>

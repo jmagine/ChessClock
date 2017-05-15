@@ -13,19 +13,35 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import android.support.v7.widget.RecyclerView;
+import android.util.ArraySet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Button;
 import android.widget.CheckBox;
 
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Created by JasonMa on 2/24/2017.
@@ -65,6 +81,10 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
   RadioButton incFischer;
   RadioButton incDelay;
   RadioButton incBronstein;
+
+  ListView lv;
+
+  Set<String> timeControls;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -119,11 +139,58 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     incPicker2.setMaxValue(60);
     incPicker2.setMinValue(0);
 
-    hourPicker1.setValue(0);
+    /*
+    hourPicker1.setScaleX(0.75f);
+    minPicker1.setScaleX(0.75f);
+    secPicker1.setScaleX(0.75f);
+    incPicker1.setScaleX(0.75f);
+    hourPicker1.setScaleY(0.75f);
+    minPicker1.setScaleY(0.75f);
+    secPicker1.setScaleY(0.75f);
+    incPicker1.setScaleY(0.75f);
+
+    hourPicker2.setScaleX(0.75f);
+    minPicker2.setScaleX(0.75f);
+    secPicker2.setScaleX(0.75f);
+    incPicker2.setScaleX(0.75f);
+    hourPicker2.setScaleY(0.75f);
+    minPicker2.setScaleY(0.75f);
+    secPicker2.setScaleY(0.75f);
+    incPicker2.setScaleY(0.75f);
+    */
+
+    //default incrementType
+    incrementType = Constants.FISCHER;
 
     //SharedPreferences
     getPreferences();
 
+    lv = (ListView) findViewById(R.id.timeControlList);
+
+    //populate time control list with time controls
+    ArrayList<String> timeControlList = new ArrayList<String>();
+
+    for (String timeControl : timeControls) {
+      timeControlList.add(timeControl);
+    }
+
+    ArrayAdapter<String> timeControlAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, timeControlList);
+
+    if(lv != null)
+      lv.setAdapter(timeControlAdapter);
+
+    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position,
+                              long id) {
+        String timeControl = (String) lv.getItemAtPosition(position);
+
+        setTimeControl(timeControl);
+
+        Intent intent = new Intent(TimeSelectorActivity.this, MainActivity.class);
+        startActivity(intent);
+      }
+    });
     if (playerTopTime == playerBottomTime && playerTopIncrement == playerBottomIncrement) {
       setSameTime(true);
       sameTimes.setChecked(true);
@@ -159,6 +226,49 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
           playerBottomIncrement = playerTopIncrement;
         }
 
+        //Generate timeControl string and add it to set. add should prevent duplicates
+        String timeControl = "";
+
+        //minutes
+        timeControl = timeControl.concat("" + playerTopTime / Constants.MINUTE);
+
+        //seconds
+        if(((playerTopTime % Constants.MINUTE)) / Constants.SECOND > 0)
+          timeControl = timeControl.concat(":" + (playerTopTime % Constants.MINUTE) / Constants.SECOND);
+
+        //increment
+        timeControl = timeControl.concat(" " + playerTopIncrement / Constants.SECOND + "");
+
+        //different times
+        if(playerBottomTime != playerTopTime || playerBottomIncrement != playerTopIncrement) {
+          timeControl = timeControl.concat(" | ");
+
+          //minutes
+          timeControl = timeControl.concat("" + playerBottomTime / Constants.MINUTE);
+
+          //seconds
+          if(((playerBottomTime % Constants.MINUTE)) / Constants.SECOND > 0)
+            timeControl = timeControl.concat(":" + (playerBottomTime % Constants.MINUTE) / Constants.SECOND);
+
+          //increment
+          timeControl = timeControl.concat(" " + playerBottomIncrement / Constants.SECOND + "");
+        }
+
+        //append increment type
+        switch(incrementType) {
+          case Constants.FISCHER:
+            timeControl = timeControl.concat(" Fischer");
+            break;
+          case Constants.DELAY:
+            timeControl = timeControl.concat(" Delay");
+            break;
+          case Constants.BRONSTEIN:
+            timeControl = timeControl.concat(" Bronstein");
+            break;
+        }
+
+        timeControls.add(timeControl);
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putLong("curr_time_p1", playerTopTime);
@@ -167,6 +277,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         editor.putLong("time_control_p2", playerBottomTime);
         editor.putLong("time_inc_p1", playerTopIncrement);
         editor.putLong("time_inc_p2", playerBottomIncrement);
+        editor.putStringSet("time_controls", timeControls);
         editor.putInt("inc_type", incrementType);
         editor.apply();
 
@@ -220,7 +331,12 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     playerBottomTime = sharedPref.getLong("time_control_p2", 5 * Constants.MINUTE);
     playerTopIncrement = sharedPref.getLong("time_inc_p1", 0);
     playerBottomIncrement = sharedPref.getLong("time_inc_p2", 0);
-    incrementType = sharedPref.getInt("inc_type", Constants.DELAY);
+    incrementType = sharedPref.getInt("inc_type", Constants.FISCHER);
+    Set<String> timeControlsTemp = sharedPref.getStringSet("time_controls", null);
+
+    timeControls = new HashSet<String>();
+    if(timeControlsTemp != null)
+      timeControls.addAll(timeControlsTemp);
 
     hourPicker1.setValue((int) (playerTopTime / Constants.HOUR));
     minPicker1.setValue((int) ((playerTopTime % Constants.HOUR) / Constants.MINUTE));
@@ -231,5 +347,65 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     minPicker2.setValue((int) ((playerBottomTime % Constants.HOUR) / Constants.MINUTE));
     secPicker2.setValue((int) ((playerBottomTime % Constants.MINUTE) / Constants.SECOND));
     incPicker2.setValue((int) (playerBottomIncrement / Constants.SECOND));
+  }
+
+  public void setTimeControl(String timeControl) {
+
+    playerTopTime = 0;
+    playerBottomTime = 0;
+
+    String[] timeParts = timeControl.split(" ");
+
+    String[] minSecs = timeParts[0].split(":");
+
+    playerTopTime += Integer.parseInt(minSecs[0]) * Constants.MINUTE;
+
+    if(minSecs.length > 1) {
+      playerTopTime += Integer.parseInt(minSecs[1]) * Constants.SECOND;
+    }
+
+    playerTopIncrement = Integer.parseInt(timeParts[1]) * Constants.SECOND;
+
+    //different times
+    if(timeParts.length > 3) {
+      String[] minSecsBottom = timeParts[2].split(":");
+
+      playerBottomTime += Integer.parseInt(minSecsBottom[0]) * Constants.MINUTE;
+
+      if(minSecsBottom.length > 1) {
+        playerBottomTime += Integer.parseInt(minSecsBottom[1]) * Constants.SECOND;
+      }
+
+      playerBottomIncrement = Integer.parseInt(timeParts[3]) * Constants.SECOND;
+    }
+    else {
+      playerBottomTime = playerTopTime;
+      playerBottomIncrement = playerTopIncrement;
+    }
+
+    //increment type always last argument
+    switch(timeParts[timeParts.length - 1]) {
+      case "Fischer":
+        incrementType = Constants.FISCHER;
+        break;
+      case "Delay":
+        incrementType = Constants.DELAY;
+        break;
+      case "Bronstein":
+        incrementType = Constants.BRONSTEIN;
+        break;
+    }
+
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    SharedPreferences.Editor editor = sharedPref.edit();
+    editor.putLong("curr_time_p1", playerTopTime);
+    editor.putLong("curr_time_p2", playerBottomTime);
+    editor.putLong("time_control_p1", playerTopTime);
+    editor.putLong("time_control_p2", playerBottomTime);
+    editor.putLong("time_inc_p1", playerTopIncrement);
+    editor.putLong("time_inc_p2", playerBottomIncrement);
+    editor.putInt("inc_type", incrementType);
+    editor.apply();
   }
 }

@@ -18,8 +18,8 @@
       </intent-filter>
     </activity>
     <activity android:name=".TimeSelectorActivity"
+      android:theme="@style/Theme.AppCompat.NoActionBar"
       android:screenOrientation="portrait">
-
     </activity>
     <activity
       android:name=".SettingsActivity"

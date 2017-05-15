@@ -1,0 +1,90 @@
+--------------------------------------------------------------------------------
+          _____ _   _ _____ _____ _____ _____ _     _____ _____ _   _           
+         |  ___| | | |  ___|  ___|  ___|  ___| |   |  _  |  ___| | | |          
+         | |   | |_| | |___| |___| |___| |   | |   | | | | |   | |/ /           
+         | |   |  _  |  ___|___  |___  | |   | |   | | | | |   |   |            
+         | |___| | | | |___ ___| |___| | |___| |___| |_| | |___| |\ \           
+         |_____|_| |_|_____|_____|_____|_____|_____|_____|_____|_| |_|          
+--------------------------------------------------------------------------------
+Android chess clock application with customizability as its primary goal.
+
+Current Features:
+- Edit clock times during game
+  - Quick mode change to allow for hour/min and min/sec time edits
+- New time control creator allows for separate control over both players' clocks
+  - This includes hours/mins/secs and increments
+- Multiple selectable increment types, saved along with time control
+- Options for customizing the time display
+  - Time rotation
+  - Blinking colon
+  - Leading Zero
+  - Units display after time
+  - Subminute time format
+- A very accessible sound button
+- Saves previous time controls for easy reuse
+
+Upcoming features:
+- Color customization
+- Possibly an analog display for cool factor :)
+--------------------------------------------------------------------------------
+Building program:
+  This repository is set up to run with Android Studio 2.3 and is buildable 
+  through gradle.
+--------------------------------------------------------------------------------
+Running program:
+  We're getting to the Play Store soon :)
+
+  For now, place APK on phone through file transfer cable and use a file manager
+  to run it.
+--------------------------------------------------------------------------------
+Changelog:
+  02-18-2017 to 05-13-17
+    MainActivity
+      - Main buttons which change color to indicate player turn, time, flagging.
+        - Rotatable text 
+      - 4 buttons in middle for controlling clock.
+        - 2 buttons which have changing icons and actions.
+          - Select time control, Pause, edit time, reset, apply changes, cancel 
+            changes.
+          - Based around state machine.
+        - Sound toggle button.
+        - Settings button.
+      - Several edit time buttons for changing times.
+        - Multitouch enabled, which allows for pressing multiple at once.
+        - Can also go between min/sec and hour/min separately for each clock.
+      - State machine contains init, play, pause, edit time, and reset confirm
+        states. Pressing various buttons will trigger state changes, which set
+        colors, icons, and variables accordingly.
+      - Current time is saved on exit so going outside of the app will not
+        result in loss of the current clock states. Reopening the app will
+        place it in pause mode.
+
+    TimeSelectorActivity
+      - Select time controls from either previous time controls or from new one.
+        - Previous time controls are currently unsorted, but display the
+          minutes (displays :seconds iff seconds is non-zero), increment, and
+          increment type.
+        - Displays either one set of number pickers for setting both times or
+          two sets of number pickers if the times are being set differently.
+        - Radio buttons for increment type and checkbox for same times.
+
+    SettingsActivity
+      - Save settings between app runs using SharedPreferences.
+      - Defaults are set when the app is first run in MainActivity.
+      - Time format (for subminute).
+          - SS.d.
+          - 0:SS.
+          - SS.
+        - Time rotation.
+          - -90.
+          - 90.
+          - 180 and 0.
+        - Blinking colon.
+        - Leading zero.
+        - Time units on/off.
+        - Sound on/off.
+
+    Constants
+      - Used for constants shared across application.
+        - Time units in millis.
+        - Increment types.

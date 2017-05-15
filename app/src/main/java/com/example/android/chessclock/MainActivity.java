@@ -442,6 +442,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        /*
         switch(timeRotation) {
           case "-90":
             topTimeTV.setRotation(-90);
@@ -457,6 +458,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             bottomTimeTV.setRotation(0);
             break;
         }
+        */
 
         if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
           topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits));
@@ -734,6 +736,22 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
       soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_on));
     else
       soundButton.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.sound_off));
+
+    switch(timeRotation) {
+      case "-90":
+        topTimeTV.setRotation(-90);
+        bottomTimeTV.setRotation(-90);
+
+        break;
+      case "90":
+        topTimeTV.setRotation(90);
+        bottomTimeTV.setRotation(90);
+        break;
+      case "180 and 0":
+        topTimeTV.setRotation(180);
+        bottomTimeTV.setRotation(0);
+        break;
+    }
   }
 
 }

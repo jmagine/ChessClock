@@ -1,320 +1,346 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:fillViewport="true"
-  android:layout_margin="0dp"
-  android:padding="0dp"
+  android:padding="16dp"
   android:background="#000">
 
-  <LinearLayout
-    android:orientation="vertical"
+  <TextView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="Past Time Controls"
+    android:textSize="24sp" />
 
-    <TextView
-      android:id="@+id/textView"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
-      android:text="Time Control Setter"
-      android:textSize="24sp" />
-
-    <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="4dp"
-      android:layout_marginBottom="4dp"
-      android:background="#6aa"/>
-
-    <TextView
-      android:id="@+id/player1Text"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="8dp"
-      android:text="Top Time"
-      android:textSize="20sp"/>
-
-    <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="4dp"
-      android:layout_marginBottom="4dp"
-      android:background="#6aa"/>
+  <ImageView
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="#6aa"/>
 
     <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="16dp"
-      android:orientation="horizontal">
-
-      <NumberPicker
-        android:id="@+id/hourPicker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:descendantFocusability="blocksDescendants"
-        android:theme="@android:style/Theme.Holo">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/hourText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="-4dp"
-        android:layout_marginLeft="-16dp"
-        android:layout_marginRight="-4dp"
-        android:layout_marginStart="-16dp"
-        android:text="hours" />
-
-      <NumberPicker
-        android:id="@+id/minPicker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:descendantFocusability="blocksDescendants"
-        android:theme="@android:style/Theme.Holo">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/minuteText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="-16dp"
-        android:layout_marginStart="-16dp"
-        android:text="mins" />
-
-      <NumberPicker
-        android:id="@+id/secPicker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:descendantFocusability="blocksDescendants"
-        android:theme="@android:style/Theme.Holo">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/secondText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="-16dp"
-        android:layout_marginStart="-16dp"
-        android:text="secs" />
-
-      <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-      <NumberPicker
-        android:id="@+id/incPicker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:descendantFocusability="blocksDescendants"
-        android:theme="@android:style/Theme.Holo">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/incText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="-16dp"
-        android:layout_marginStart="-16dp"
-        android:text="inc" />
+      android:layout_width="wrap_content"
+      android:layout_height="200dp"
+      android:orientation="vertical">
+      <ListView
+        android:id="@+id/timeControlList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      </ListView>
     </LinearLayout>
 
-    <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="4dp"
-      android:layout_marginBottom="4dp"
-      android:background="#6aa"/>
+  <ImageView
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="#6aa"/>
 
-    <TextView
-      android:id="@+id/player2Text"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Bottom Time"
-      android:textSize="20sp" />
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="New Time Control"
+    android:textSize="24sp" />
 
+  <ImageView
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="#6aa"/>
+
+  <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <LinearLayout
-      android:id="@+id/player2TimeSelection"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="16dp"
-      android:orientation="horizontal">
-
-      <NumberPicker
-        android:id="@+id/hourPicker2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:theme="@android:style/Theme.Holo"
-        android:descendantFocusability="blocksDescendants">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/hourText2"
-        android:layout_marginStart="-16dp"
-        android:layout_marginLeft="-16dp"
-        android:layout_marginRight="-4dp"
-        android:layout_marginEnd="-4dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="hours"/>
-
-      <NumberPicker
-        android:id="@+id/minPicker2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:theme="@android:style/Theme.Holo"
-        android:descendantFocusability="blocksDescendants">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/minuteText2"
-        android:layout_marginStart="-16dp"
-        android:layout_marginLeft="-16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="mins"/>
-
-      <NumberPicker
-        android:id="@+id/secPicker2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:theme="@android:style/Theme.Holo"
-        android:descendantFocusability="blocksDescendants">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/secondText2"
-        android:layout_marginStart="-16dp"
-        android:layout_marginLeft="-16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="secs"/>
-
-      <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"/>
-
-      <NumberPicker
-        android:id="@+id/incPicker2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:theme="@android:style/Theme.Holo"
-        android:descendantFocusability="blocksDescendants">
-
-      </NumberPicker>
-
-      <TextView
-        android:id="@+id/incText2"
-        android:layout_marginStart="-16dp"
-        android:layout_marginLeft="-16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="inc"/>
-    </LinearLayout>
-
-    <ImageView
-      android:id="@+id/separator"
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="4dp"
-      android:layout_marginBottom="4dp"
-      android:background="#6aa"/>
-
-    <CheckBox
-      android:id="@+id/sameTimes"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="16dp"
-      android:checked="true"
-      android:text="Same Times"/>
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Increment Type"
-      android:textSize="20sp"/>
-
-    <RadioGroup
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:orientation="vertical">
 
-      <RadioButton
-        android:id="@+id/incFischer"
+      <TextView
+        android:id="@+id/player1Text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fischer"
-        android:checked="true"/>
+        android:layout_marginTop="8dp"
+        android:text="Top Time"
+        android:textSize="20sp"/>
 
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-16dp"
+        android:layout_marginBottom="-8dp"
+        android:orientation="horizontal">
 
-      <RadioButton
-        android:id="@+id/incDelay"
+        <NumberPicker
+          android:id="@+id/hourPicker1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:descendantFocusability="blocksDescendants"
+          android:theme="@android:style/Theme.Holo">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/hourText1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginEnd="-4dp"
+          android:layout_marginLeft="-16dp"
+          android:layout_marginRight="-4dp"
+          android:layout_marginStart="-16dp"
+          android:text="hours" />
+
+        <NumberPicker
+          android:id="@+id/minPicker1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:descendantFocusability="blocksDescendants"
+          android:theme="@android:style/Theme.Holo">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/minuteText1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginLeft="-16dp"
+          android:layout_marginStart="-16dp"
+          android:text="mins" />
+
+        <NumberPicker
+          android:id="@+id/secPicker1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:descendantFocusability="blocksDescendants"
+          android:theme="@android:style/Theme.Holo">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/secondText1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginLeft="-16dp"
+          android:layout_marginStart="-16dp"
+          android:text="secs" />
+
+        <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <NumberPicker
+          android:id="@+id/incPicker1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:descendantFocusability="blocksDescendants"
+          android:theme="@android:style/Theme.Holo">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/incText1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginLeft="-16dp"
+          android:layout_marginStart="-16dp"
+          android:text="inc" />
+      </LinearLayout>
+
+      <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="#6aa"/>
+
+      <TextView
+        android:id="@+id/player2Text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delay"/>
+        android:text="Bottom Time"
+        android:textSize="20sp" />
 
-      <RadioButton
-        android:id="@+id/incBronstein"
+      <LinearLayout
+        android:id="@+id/player2TimeSelection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-16dp"
+        android:layout_marginBottom="-8dp"
+        android:orientation="horizontal">
+
+        <NumberPicker
+          android:id="@+id/hourPicker2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:theme="@android:style/Theme.Holo"
+          android:descendantFocusability="blocksDescendants">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/hourText2"
+          android:layout_marginStart="-16dp"
+          android:layout_marginLeft="-16dp"
+          android:layout_marginRight="-4dp"
+          android:layout_marginEnd="-4dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="hours"/>
+
+        <NumberPicker
+          android:id="@+id/minPicker2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:theme="@android:style/Theme.Holo"
+          android:descendantFocusability="blocksDescendants">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/minuteText2"
+          android:layout_marginStart="-16dp"
+          android:layout_marginLeft="-16dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="mins"/>
+
+        <NumberPicker
+          android:id="@+id/secPicker2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:theme="@android:style/Theme.Holo"
+          android:descendantFocusability="blocksDescendants">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/secondText2"
+          android:layout_marginStart="-16dp"
+          android:layout_marginLeft="-16dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="secs"/>
+
+        <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"/>
+
+        <NumberPicker
+          android:id="@+id/incPicker2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:theme="@android:style/Theme.Holo"
+          android:descendantFocusability="blocksDescendants">
+
+        </NumberPicker>
+
+        <TextView
+          android:id="@+id/incText2"
+          android:layout_marginStart="-16dp"
+          android:layout_marginLeft="-16dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="inc"/>
+      </LinearLayout>
+
+      <ImageView
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="#6aa"/>
+
+      <CheckBox
+        android:id="@+id/sameTimes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bronstein"/>
+        android:layout_marginBottom="16dp"
+        android:checked="true"
+        android:text="Same Times"/>
 
-    </RadioGroup>
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Increment Type"
+        android:textSize="20sp"/>
 
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      android:visibility="invisible">
-    </TextView>
+      <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:layout_margin="0dp">
+        <RadioButton
+          android:id="@+id/incFischer"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Fischer"
+          android:checked="true"/>
 
-      <Button
-        android:id="@+id/applyButton"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="4dp"
+
+        <RadioButton
+          android:id="@+id/incDelay"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Delay"/>
+
+        <RadioButton
+          android:id="@+id/incBronstein"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Bronstein"/>
+
+      </RadioGroup>
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="0dp"
-        android:background="#6aa"
-        android:text="Apply" />
+        android:visibility="invisible">
+      </TextView>
 
-      <Button
-        android:id="@+id/cancelButton"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_weight="1"
-        android:layout_marginLeft="4dp"
-        android:padding="0dp"
-        android:background="#6aa"
-        android:text="Cancel"/>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="0dp">
+
+        <Button
+          android:id="@+id/applyButton"
+          android:layout_width="0dp"
+          android:layout_height="40dp"
+          android:layout_marginRight="4dp"
+          android:layout_weight="1"
+          android:padding="0dp"
+          android:background="#6aa"
+          android:text="Apply" />
+
+        <Button
+          android:id="@+id/cancelButton"
+          android:layout_width="0dp"
+          android:layout_height="40dp"
+          android:layout_weight="1"
+          android:layout_marginLeft="4dp"
+          android:padding="0dp"
+          android:background="#6aa"
+          android:text="Cancel"/>
+      </LinearLayout>
     </LinearLayout>
+  </ScrollView>
 
-  </LinearLayout>
-</ScrollView>
+
+</LinearLayout>

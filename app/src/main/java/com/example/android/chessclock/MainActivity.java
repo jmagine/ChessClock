@@ -26,7 +26,8 @@ import java.util.TimerTask;
 import java.util.Timer;
 import java.util.prefs.Preferences;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener, OnSharedPreferenceChangeListener{
+public class MainActivity extends AppCompatActivity
+                          implements View.OnTouchListener, OnSharedPreferenceChangeListener{
 
   MediaPlayer mp1;
   MediaPlayer mp2;
@@ -128,6 +129,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     editTimeButtons[5] = (ImageButton) findViewById(R.id.editTimeTop2Down);
     editTimeButtons[6] = (ImageButton) findViewById(R.id.editTimeBottom1Down);
     editTimeButtons[7] = (ImageButton) findViewById(R.id.editTimeBottom2Down);
+
+    //Technically works, just find a better way to do it and put it in all entry points in app
+    //topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
 
     topButton.setOnTouchListener(this);
     bottomButton.setOnTouchListener(this);
@@ -460,7 +465,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
         */
 
-        if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
+        if(turn == PLAYER_TOP && topDelay > 0)
+          topTimeTV.setText(createTimeString(topDelay, displayTimeModeTop, blinkingColon, leadingZero, timeUnits));
+        else if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
           topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits));
         else
           topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, !blinkingColon, leadingZero, timeUnits));
@@ -473,7 +480,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             topFirstFlag.setVisibility(View.VISIBLE);
         }
 
-        if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
+        if(turn == PLAYER_BOT && bottomDelay > 0)
+          bottomTimeTV.setText(createTimeString(bottomDelay, displayTimeModeBottom, blinkingColon, leadingZero, timeUnits));
+        else if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
           bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, true, leadingZero, timeUnits));
         else
           bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, !blinkingColon, leadingZero, timeUnits));

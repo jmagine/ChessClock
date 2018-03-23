@@ -85,6 +85,8 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
   ListView lv;
 
   Set<String> timeControls;
+  ArrayList<String> timeControlList;
+  ArrayAdapter<String> timeControlAdapter;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -168,13 +170,13 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     lv = (ListView) findViewById(R.id.timeControlList);
 
     //populate time control list with time controls
-    ArrayList<String> timeControlList = new ArrayList<String>();
+    timeControlList = new ArrayList<String>();
 
     for (String timeControl : timeControls) {
       timeControlList.add(timeControl);
     }
 
-    ArrayAdapter<String> timeControlAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, timeControlList);
+    timeControlAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, timeControlList);
 
     if(lv != null)
       lv.setAdapter(timeControlAdapter);
@@ -191,6 +193,16 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         startActivity(intent);
       }
     });
+    lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+      @Override
+      public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
+                                     long id) {
+        String timeControl = (String) lv.getItemAtPosition(position);
+        removeTimeControl(position);
+        return false;
+      }
+    });
+
     if (playerTopTime == playerBottomTime && playerTopIncrement == playerBottomIncrement) {
       setSameTime(true);
       sameTimes.setChecked(true);
@@ -208,14 +220,14 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     switch(v.getId()) {
       case R.id.applyButton:
 
-        playerTopTime = 0;
+        playerTopTime = 1;
         playerTopTime += hourPicker1.getValue() * Constants.HOUR;
         playerTopTime += minPicker1.getValue() * Constants.MINUTE;
         playerTopTime += secPicker1.getValue() * Constants.SECOND;
         playerTopIncrement = incPicker1.getValue() * Constants.SECOND;
 
         if(enablePlayer2) {
-          playerBottomTime = 0;
+          playerBottomTime = 1;
           playerBottomTime += hourPicker2.getValue() * Constants.HOUR;
           playerBottomTime += minPicker2.getValue() * Constants.MINUTE;
           playerBottomTime += secPicker2.getValue() * Constants.SECOND;
@@ -349,6 +361,11 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     incPicker2.setValue((int) (playerBottomIncrement / Constants.SECOND));
   }
 
+  public void removeTimeControl(int position) {
+    timeControlList.remove(position);
+    timeControlAdapter.notifyDataSetChanged();
+  }
+
   public void setTimeControl(String timeControl) {
 
     playerTopTime = 0;
@@ -368,7 +385,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
 
     //different times
     if(timeParts.length > 3) {
-      String[] minSecsBottom = timeParts[2].split(":");
+      String[] minSecsBottom = timeParts[3].split(":");
 
       playerBottomTime += Integer.parseInt(minSecsBottom[0]) * Constants.MINUTE;
 
@@ -376,7 +393,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         playerBottomTime += Integer.parseInt(minSecsBottom[1]) * Constants.SECOND;
       }
 
-      playerBottomIncrement = Integer.parseInt(timeParts[3]) * Constants.SECOND;
+      playerBottomIncrement = Integer.parseInt(timeParts[4]) * Constants.SECOND;
     }
     else {
       playerBottomTime = playerTopTime;

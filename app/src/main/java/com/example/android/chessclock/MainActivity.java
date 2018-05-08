@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 
 import java.util.TimerTask;
 import java.util.Timer;
+import android.util.Log;
 import java.util.prefs.Preferences;
 
 public class MainActivity extends AppCompatActivity
@@ -68,11 +69,12 @@ public class MainActivity extends AppCompatActivity
   final int PLAYER_BOT = 2;
 
   //clock modes
-  final int MODE_INIT      = 0;
-  final int MODE_PLAY      = 1;
-  final int MODE_PAUSE     = 2;
-  final int MODE_EDIT_TIME = 3;
-  final int MODE_RESET_CNF = 4;
+  final int MODE_UNINIT    = 0;
+  final int MODE_INIT      = 1;
+  final int MODE_PLAY      = 2;
+  final int MODE_PAUSE     = 3;
+  final int MODE_EDIT_TIME = 4;
+  final int MODE_RESET_CNF = 5;
 
   String timeFormat;
   String timeRotation;
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity
   long bronsteinTopTime;
   long bronsteinBottomTime;
   int turn;               //turn to move
-  int currMode;           //current clock mode
+  int currMode = MODE_UNINIT; //current clock mode
   int displayTimeModeTop;    //HOUR_MIN or MIN_SEC mode
   int displayTimeModeBottom; //HOUR_MIN or MIN_SEC mode
   int incrementType;
@@ -95,6 +97,11 @@ public class MainActivity extends AppCompatActivity
   boolean leadingZero;    //whether to display leading 0
   boolean blinkingColon;  //whether to blink colon
   boolean timeUnits;      //whether to display s or m after time
+
+  //variables under test
+  String lastUItopTime = "";
+  String lastUIbottomTime = "";
+  //int lastUIMode;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +138,7 @@ public class MainActivity extends AppCompatActivity
     editTimeButtons[7] = (ImageButton) findViewById(R.id.editTimeBottom2Down);
 
     //Technically works, just find a better way to do it and put it in all entry points in app
-    //topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
 
     topButton.setOnTouchListener(this);
@@ -184,6 +191,9 @@ public class MainActivity extends AppCompatActivity
   public boolean onTouch(View v, MotionEvent m) {
     if(m.getAction() != MotionEvent.ACTION_DOWN)
       return false;
+
+    if(currMode == MODE_PLAY)
+      topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     switch (v.getId()) {
       case R.id.topButton:
@@ -380,6 +390,8 @@ public class MainActivity extends AppCompatActivity
   protected void onResume() {
     super.onResume();
 
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
     mp1 = MediaPlayer.create(this, R.raw.tick);
     mp2 = MediaPlayer.create(this, R.raw.tick);
     displayTimeModeTop = DISP_AUTO;
@@ -395,6 +407,8 @@ public class MainActivity extends AppCompatActivity
   @Override
   protected void onRestart() {
     super.onRestart();
+
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     if(mp1 == null)
       mp1 = MediaPlayer.create(this, R.raw.tick);
@@ -465,12 +479,18 @@ public class MainActivity extends AppCompatActivity
         }
         */
 
+        String newTimeText = "";
+
         if(turn == PLAYER_TOP && topDelay > 0)
-          topTimeTV.setText(createTimeString(topDelay, displayTimeModeTop, blinkingColon, leadingZero, timeUnits));
+          newTimeText = createTimeString(topDelay, displayTimeModeTop, blinkingColon, leadingZero, timeUnits);
         else if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
-          topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits));
+          newTimeText = createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits);
         else
-          topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, !blinkingColon, leadingZero, timeUnits));
+          newTimeText = createTimeString(topTime, displayTimeModeTop, !blinkingColon, leadingZero, timeUnits);
+
+        if(!newTimeText.equals(lastUItopTime)) {
+          topTimeTV.setText(newTimeText);
+        }
 
         if(topTime <= 0) {
           topTime = 0;
@@ -480,12 +500,18 @@ public class MainActivity extends AppCompatActivity
             topFirstFlag.setVisibility(View.VISIBLE);
         }
 
+        lastUItopTime = (String) topTimeTV.getText();
+
         if(turn == PLAYER_BOT && bottomDelay > 0)
-          bottomTimeTV.setText(createTimeString(bottomDelay, displayTimeModeBottom, blinkingColon, leadingZero, timeUnits));
+          newTimeText = createTimeString(bottomDelay, displayTimeModeBottom, blinkingColon, leadingZero, timeUnits);
         else if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
-          bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, true, leadingZero, timeUnits));
+          newTimeText = createTimeString(bottomTime, displayTimeModeBottom, true, leadingZero, timeUnits);
         else
-          bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, !blinkingColon, leadingZero, timeUnits));
+          newTimeText = createTimeString(bottomTime, displayTimeModeBottom, !blinkingColon, leadingZero, timeUnits);
+
+        if(!newTimeText.equals(lastUIbottomTime)) {
+          bottomTimeTV.setText(newTimeText);
+        }
 
         if(bottomTime <= 0) {
           bottomTime = 0;
@@ -494,6 +520,8 @@ public class MainActivity extends AppCompatActivity
           if(topTime > 0 && currMode != MODE_EDIT_TIME)
             bottomFirstFlag.setVisibility(View.VISIBLE);
         }
+
+        lastUIbottomTime = (String) bottomTimeTV.getText();
       }
     });
   }
@@ -589,6 +617,9 @@ public class MainActivity extends AppCompatActivity
   }
 
   public void setMode(int mode) {
+
+    if(mode == currMode)
+      return;
 
     switch(mode) {
       case MODE_INIT:

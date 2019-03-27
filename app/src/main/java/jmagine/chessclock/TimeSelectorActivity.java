@@ -1,4 +1,4 @@
-package com.example.android.chessclock;
+package jmagine.chessclock;
 
 import android.app.DialogFragment;
 import android.app.Dialog;

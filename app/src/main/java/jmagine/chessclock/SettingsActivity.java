@@ -1,4 +1,4 @@
-package com.example.android.chessclock;
+package jmagine.chessclock;
 
 
 import android.annotation.TargetApi;

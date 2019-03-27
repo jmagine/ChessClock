@@ -1,4 +1,4 @@
-package com.example.android.chessclock;
+package jmagine.chessclock;
 
 /**
  * Created by JasonMa on 2/24/2017.

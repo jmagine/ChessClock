@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">ChessClock</string>
+  <string name="app_name">Chess Clock</string>
   <string name="title_activity_settings">Settings</string>
 
   <string-array name="time_rotations">

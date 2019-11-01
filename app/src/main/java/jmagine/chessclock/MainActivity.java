@@ -1,7 +1,5 @@
 package jmagine.chessclock;
 
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
@@ -24,7 +22,6 @@ import android.preference.PreferenceManager;
 
 import java.util.TimerTask;
 import java.util.Timer;
-import java.util.prefs.Preferences;
 
 public class MainActivity extends AppCompatActivity
                           implements View.OnTouchListener, OnSharedPreferenceChangeListener{
@@ -76,16 +73,19 @@ public class MainActivity extends AppCompatActivity
 
   String timeFormat;
   String timeRotation;
-  long[] timeControl;
-  long[] increment;
-  long topTime;
-  long bottomTime;
-  long tempTopTime;
-  long tempBottomTime;
-  long topDelay;
-  long bottomDelay;
+  long[] time_default;
+  long[] comp_default;
+
+  //TODO turn these into arrays too
+  long time_top;
+  long time_bot;
+  long time_top_temp;
+  long time_bot_temp;
+  long top_comp;
+  long bot_comp;
   long bronsteinTopTime;
   long bronsteinBottomTime;
+
   int turn;               //turn to move
   int currMode;           //current clock mode
   int displayTimeModeTop;    //HOUR_MIN or MIN_SEC mode
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity
     editTimeButtons[7] = (ImageButton) findViewById(R.id.editTimeBottom2Down);
 
     //Technically works, just find a better way to do it and put it in all entry points in app
-    //topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
 
     topButton.setOnTouchListener(this);
@@ -148,9 +148,9 @@ public class MainActivity extends AppCompatActivity
     for(int i = 0; i < 8; i++)
       editTimeButtons[i].setOnTouchListener(this);
 
-    //Initialize time control and increment arrays in preparation for shared preferences update
-    timeControl = new long[2];
-    increment = new long[2];
+    //Initialize time control and comp_default arrays in preparation for shared preferences update
+    time_default = new long[2];
+    comp_default = new long[2];
 
     //Get preferences and set default values if not set
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -161,18 +161,19 @@ public class MainActivity extends AppCompatActivity
     displayTimeModeBottom = DISP_AUTO;
     setMode(MODE_INIT);
 
+    //TODO look into real-time alternatives like SystemClock
     //Update times each 10 ms
     Timer t = new Timer();
     t.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
         if(turn == PLAYER_TOP) {
-          if(topDelay > 0) topDelay -= 10;
-          else             topTime -= 10;
+          if(top_comp > 0) top_comp -= 10;
+          else             time_top -= 10;
         }
         else if(turn == PLAYER_BOT) {
-          if(bottomDelay > 0) bottomDelay -= 10;
-          else                bottomTime -= 10;
+          if(bot_comp > 0) bot_comp -= 10;
+          else             time_bot -= 10;
         }
 
         updateUI();
@@ -182,6 +183,8 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public boolean onTouch(View v, MotionEvent m) {
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
     if(m.getAction() != MotionEvent.ACTION_DOWN)
       return false;
 
@@ -190,26 +193,26 @@ public class MainActivity extends AppCompatActivity
         if(mp1 != null && playSounds && turn != PLAYER_BOT)
           mp1.start();
 
-        if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF00CCCC);
-        else               bottomButton.setBackgroundColor(0xFFFF4444);
-        if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
-        else               topButton.setBackgroundColor(0xFFFF4444);
+        if(time_bot > 0) bottomButton.setBackgroundColor(getResources().getColor(R.color.button_active));
+        else               bottomButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
+        if(time_top > 0)    topButton.setBackgroundColor(getResources().getColor(R.color.button_inactive));
+        else               topButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
 
         if(currMode == MODE_INIT || turn == PLAYER_TOP) {
           switch (incrementType) {
             case Constants.DELAY:
-              bottomDelay = increment[1];
+              bot_comp = comp_default[1];
               break;
             case Constants.FISCHER:
-              bottomTime += increment[1];
+              time_bot += comp_default[1];
               break;
             case Constants.BRONSTEIN:
-              topTime += increment[0];
+              time_top += comp_default[0];
 
-              if (topTime > bronsteinTopTime)
-                topTime = bronsteinTopTime;
+              if (time_top > bronsteinTopTime)
+                time_top = bronsteinTopTime;
 
-              bronsteinBottomTime = bottomTime;
+              bronsteinBottomTime = time_bot;
               break;
           }
         }
@@ -221,26 +224,26 @@ public class MainActivity extends AppCompatActivity
         if(mp2 != null && playSounds && turn != PLAYER_TOP)
           mp2.start();
 
-        if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
-        else               bottomButton.setBackgroundColor(0xFFFF4444);
-        if(topTime > 0)    topButton.setBackgroundColor(0xFF00CCCC);
-        else               topButton.setBackgroundColor(0xFFFF4444);
+        if(time_bot > 0) bottomButton.setBackgroundColor(getResources().getColor(R.color.button_inactive));
+        else               bottomButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
+        if(time_top > 0)    topButton.setBackgroundColor(getResources().getColor(R.color.button_active));
+        else               topButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
 
         if(currMode == MODE_INIT || turn == PLAYER_BOT) {
           switch (incrementType) {
             case Constants.DELAY:
-              topDelay = increment[0];
+              top_comp = comp_default[0];
               break;
             case Constants.FISCHER:
-              topTime += increment[0];
+              time_top += comp_default[0];
               break;
             case Constants.BRONSTEIN:
-              bottomTime += increment[1];
+              time_bot += comp_default[1];
 
-              if (bottomTime > bronsteinBottomTime)
-                bottomTime = bronsteinBottomTime;
+              if (time_bot > bronsteinBottomTime)
+                time_bot = bronsteinBottomTime;
 
-              bronsteinTopTime = topTime;
+              bronsteinTopTime = time_top;
               break;
           }
         }
@@ -250,8 +253,8 @@ public class MainActivity extends AppCompatActivity
       case R.id.controlButton1:
         if(currMode == MODE_INIT) {
           Intent intent = new Intent(controlButton1.getContext(), TimeSelectorActivity.class);
-          intent.putExtra("times", timeControl);
-          intent.putExtra("increment", increment);
+          intent.putExtra("times", time_default);
+          intent.putExtra("comp_default", comp_default);
           intent.putExtra("increment_type", incrementType);
           startActivityForResult(intent, 0);
         }
@@ -261,7 +264,7 @@ public class MainActivity extends AppCompatActivity
         else if(currMode == MODE_PLAY || currMode == MODE_PAUSE)
           setMode(MODE_RESET_CNF);
         else if(currMode == MODE_EDIT_TIME)
-          if(topTime == timeControl[0] && bottomTime == timeControl[1])
+          if(time_top == time_default[0] && time_bot == time_default[1])
             setMode(MODE_INIT);
           else
             setMode(MODE_PAUSE);
@@ -272,7 +275,7 @@ public class MainActivity extends AppCompatActivity
         else if(currMode == MODE_EDIT_TIME) {
            revertChanges();
 
-          if(topTime == timeControl[0] && bottomTime == timeControl[1])
+          if(time_top == time_default[0] && time_bot == time_default[1])
             setMode(MODE_INIT);
           else
             setMode(MODE_PAUSE);
@@ -335,40 +338,40 @@ public class MainActivity extends AppCompatActivity
           displayTimeModeBottom = DISP_MIN_SEC;
         break;
       case R.id.editTimeTop1Up:
-        if(displayTimeModeTop == DISP_MIN_SEC) topTime += SECOND;
-        else                           topTime += MINUTE;
+        if(displayTimeModeTop == DISP_MIN_SEC) time_top += SECOND;
+        else                           time_top += MINUTE;
         break;
       case R.id.editTimeTop2Up:
-        if(displayTimeModeTop == DISP_MIN_SEC) topTime += MINUTE;
-        else                           topTime += HOUR;
+        if(displayTimeModeTop == DISP_MIN_SEC) time_top += MINUTE;
+        else                           time_top += HOUR;
         break;
       case R.id.editTimeBottom1Up:
-        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime += SECOND;
-        else                              bottomTime += MINUTE;
+        if(displayTimeModeBottom == DISP_MIN_SEC) time_bot += SECOND;
+        else                              time_bot += MINUTE;
         break;
       case R.id.editTimeBottom2Up:
-        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime += MINUTE;
-        else                              bottomTime += HOUR;
+        if(displayTimeModeBottom == DISP_MIN_SEC) time_bot += MINUTE;
+        else                              time_bot += HOUR;
         break;
       case R.id.editTimeTop1Down:
-        if(displayTimeModeTop == DISP_MIN_SEC) topTime -= SECOND;
-        else                           topTime -= MINUTE;
-        if(topTime < 0)                topTime = 0;
+        if(displayTimeModeTop == DISP_MIN_SEC) time_top -= SECOND;
+        else                           time_top -= MINUTE;
+        if(time_top < 0)                time_top = 0;
         break;
       case R.id.editTimeTop2Down:
-        if(displayTimeModeTop == DISP_MIN_SEC) topTime -= MINUTE;
-        else                           topTime -= HOUR;
-        if(topTime < 0)                topTime = 0;
+        if(displayTimeModeTop == DISP_MIN_SEC) time_top -= MINUTE;
+        else                           time_top -= HOUR;
+        if(time_top < 0)                time_top = 0;
         break;
       case R.id.editTimeBottom1Down:
-        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime -= SECOND;
-        else                              bottomTime -= MINUTE;
-        if(bottomTime < 0)                bottomTime = 0;
+        if(displayTimeModeBottom == DISP_MIN_SEC) time_bot -= SECOND;
+        else                              time_bot -= MINUTE;
+        if(time_bot < 0)                time_bot = 0;
         break;
       case R.id.editTimeBottom2Down:
-        if(displayTimeModeBottom == DISP_MIN_SEC) bottomTime -= MINUTE;
-        else                              bottomTime -= HOUR;
-        if(bottomTime < 0)                bottomTime = 0;
+        if(displayTimeModeBottom == DISP_MIN_SEC) time_bot -= MINUTE;
+        else                              time_bot -= HOUR;
+        if(time_bot < 0)                time_bot = 0;
         break;
       default:
         break;
@@ -380,13 +383,15 @@ public class MainActivity extends AppCompatActivity
   protected void onResume() {
     super.onResume();
 
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
     mp1 = MediaPlayer.create(this, R.raw.tick);
     mp2 = MediaPlayer.create(this, R.raw.tick);
     displayTimeModeTop = DISP_AUTO;
     displayTimeModeBottom = DISP_AUTO;
     getPreferences();
 
-    if(topTime == timeControl[0] && bottomTime == timeControl[1])
+    if(time_top == time_default[0] && time_bot == time_default[1])
       setMode(MODE_INIT);
     else
       setMode(MODE_PAUSE);
@@ -395,6 +400,8 @@ public class MainActivity extends AppCompatActivity
   @Override
   protected void onRestart() {
     super.onRestart();
+
+    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     if(mp1 == null)
       mp1 = MediaPlayer.create(this, R.raw.tick);
@@ -413,8 +420,8 @@ public class MainActivity extends AppCompatActivity
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     SharedPreferences.Editor editor = sharedPref.edit();
-    editor.putLong("curr_time_p1", topTime);
-    editor.putLong("curr_time_p2", bottomTime);
+    editor.putLong("curr_time_p1", time_top);
+    editor.putLong("curr_time_p2", time_bot);
 
     editor.apply();
 
@@ -431,8 +438,8 @@ public class MainActivity extends AppCompatActivity
 
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     SharedPreferences.Editor editor = sharedPref.edit();
-    editor.putLong("time_p1", topTime);
-    editor.putLong("time_p2", bottomTime);
+    editor.putLong("time_p1", time_top);
+    editor.putLong("time_p2", time_bot);
 
     editor.apply();
 
@@ -465,39 +472,43 @@ public class MainActivity extends AppCompatActivity
         }
         */
 
-        if(turn == PLAYER_TOP && topDelay > 0)
-          topTimeTV.setText(createTimeString(topDelay, displayTimeModeTop, blinkingColon, leadingZero, timeUnits));
-        else if(turn != PLAYER_TOP || topTime / 1000 % 2 == 1)
-          topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, true, leadingZero, timeUnits));
+        //TODO clean this
+
+        //TODO testing the time string creation optimizations
+        if(turn == PLAYER_TOP && top_comp > 0)
+          topTimeTV.setText(createTimeString(top_comp, displayTimeModeTop, blinkingColon, leadingZero, timeUnits));
+        else if(turn != PLAYER_TOP || time_top / 1000 % 2 == 1)
+          topTimeTV.setText(createTimeString(time_top, displayTimeModeTop, true, leadingZero, timeUnits));
         else
-          topTimeTV.setText(createTimeString(topTime, displayTimeModeTop, !blinkingColon, leadingZero, timeUnits));
+          topTimeTV.setText(createTimeString(time_top, displayTimeModeTop, !blinkingColon, leadingZero, timeUnits));
 
-        if(topTime <= 0) {
-          topTime = 0;
-          topButton.setBackgroundColor(0xFFFF4444);
+        if(time_top <= 0) {
+          time_top = 0;
+          topButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
 
-          if(bottomTime > 0 && currMode != MODE_EDIT_TIME)
+          if(time_bot > 0 && currMode != MODE_EDIT_TIME)
             topFirstFlag.setVisibility(View.VISIBLE);
         }
 
-        if(turn == PLAYER_BOT && bottomDelay > 0)
-          bottomTimeTV.setText(createTimeString(bottomDelay, displayTimeModeBottom, blinkingColon, leadingZero, timeUnits));
-        else if(turn != PLAYER_BOT || bottomTime / 1000 % 2 == 1)
-          bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, true, leadingZero, timeUnits));
+        if(turn == PLAYER_BOT && bot_comp > 0)
+          bottomTimeTV.setText(createTimeString(bot_comp, displayTimeModeBottom, blinkingColon, leadingZero, timeUnits));
+        else if(turn != PLAYER_BOT || time_bot / 1000 % 2 == 1)
+          bottomTimeTV.setText(createTimeString(time_bot, displayTimeModeBottom, true, leadingZero, timeUnits));
         else
-          bottomTimeTV.setText(createTimeString(bottomTime, displayTimeModeBottom, !blinkingColon, leadingZero, timeUnits));
+          bottomTimeTV.setText(createTimeString(time_bot, displayTimeModeBottom, !blinkingColon, leadingZero, timeUnits));
 
-        if(bottomTime <= 0) {
-          bottomTime = 0;
-          bottomButton.setBackgroundColor(0xFFFF4444);
+        if(time_bot <= 0) {
+          time_bot = 0;
+          bottomButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
 
-          if(topTime > 0 && currMode != MODE_EDIT_TIME)
+          if(time_top > 0 && currMode != MODE_EDIT_TIME)
             bottomFirstFlag.setVisibility(View.VISIBLE);
         }
       }
     });
   }
 
+  //TODO clean or move this
   public String createTimeString(long time, int displayMode, boolean colon, boolean leadingZero, boolean timeUnits) {
     String timeString = "";
     //Process HH:MM format times
@@ -579,13 +590,13 @@ public class MainActivity extends AppCompatActivity
   }
 
   public void resetTimes() {
-    topTime = timeControl[0];
-    bottomTime = timeControl[1];
+    time_top = time_default[0];
+    time_bot = time_default[1];
   }
 
   public void revertChanges() {
-    topTime = tempTopTime;
-    bottomTime = tempBottomTime;
+    time_top = time_top_temp;
+    time_bot = time_bot_temp;
   }
 
   public void setMode(int mode) {
@@ -613,14 +624,14 @@ public class MainActivity extends AppCompatActivity
         turn = PAUSE;
         resetTimes();
 
-        bronsteinTopTime = topTime;
-        bronsteinBottomTime = bottomTime;
+        bronsteinTopTime = time_top;
+        bronsteinBottomTime = time_bot;
 
         //if out of time, button is still red. otherwise unpressed color
-        if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
-        else               topButton.setBackgroundColor(0xFFFF4444);
-        if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
-        else               bottomButton.setBackgroundColor(0xFFFF4444);
+        if(time_top > 0)    topButton.setBackgroundColor(getResources().getColor(R.color.button_inactive));
+        else               topButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
+        if(time_bot > 0) bottomButton.setBackgroundColor(getResources().getColor(R.color.button_inactive));
+        else               bottomButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
         break;
       case MODE_PLAY:
         topButton.setVisibility(View.VISIBLE);
@@ -641,10 +652,10 @@ public class MainActivity extends AppCompatActivity
         bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
 
         //if out of time, button is still red. otherwise unpressed color
-        if(topTime > 0)    topButton.setBackgroundColor(0xFF222222);
-        else               topButton.setBackgroundColor(0xFFFF4444);
-        if(bottomTime > 0) bottomButton.setBackgroundColor(0xFF222222);
-        else               bottomButton.setBackgroundColor(0xFFFF4444);
+        if(time_top > 0)    topButton.setBackgroundColor(getResources().getColor(R.color.button_inactive));
+        else               topButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
+        if(time_bot > 0) bottomButton.setBackgroundColor(getResources().getColor(R.color.button_inactive));
+        else               bottomButton.setBackgroundColor(getResources().getColor(R.color.button_flagged));
 
         controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.reset));
         controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.edit_time));
@@ -661,7 +672,7 @@ public class MainActivity extends AppCompatActivity
         topFirstFlag.setVisibility(View.INVISIBLE);
         bottomFirstFlag.setVisibility(View.INVISIBLE);
 
-        if(topTime < HOUR) {
+        if(time_top < HOUR) {
           topEditTimeModeUp.setVisibility(View.VISIBLE);
           topEditTimeModeDown.setVisibility(View.INVISIBLE);
           displayTimeModeTop = DISP_MIN_SEC;
@@ -672,7 +683,7 @@ public class MainActivity extends AppCompatActivity
           displayTimeModeTop = DISP_HOUR_MIN;
         }
 
-        if(bottomTime < HOUR) {
+        if(time_bot < HOUR) {
           bottomEditTimeModeUp.setVisibility(View.VISIBLE);
           bottomEditTimeModeDown.setVisibility(View.INVISIBLE);
           displayTimeModeBottom = DISP_MIN_SEC;
@@ -686,8 +697,8 @@ public class MainActivity extends AppCompatActivity
         controlButton1.setImageDrawable(ContextCompat.getDrawable(controlButton1.getContext(), R.drawable.apply));
         controlButton2.setImageDrawable(ContextCompat.getDrawable(controlButton2.getContext(), R.drawable.cancel));
 
-        tempTopTime = topTime;
-        tempBottomTime = bottomTime;
+        time_top_temp = time_top;
+        time_bot_temp = time_bot;
 
         for(int i = 0; i < 8; i++) editTimeButtons[i].setVisibility(View.VISIBLE);
 
@@ -733,12 +744,12 @@ public class MainActivity extends AppCompatActivity
     blinkingColon = sharedPref.getBoolean("blinking_colon", true);
     timeUnits = sharedPref.getBoolean("time_units", true);
     playSounds = sharedPref.getBoolean("sound", true);
-    timeControl[0] = sharedPref.getLong("time_control_p1", 5 * MINUTE);
-    timeControl[1] = sharedPref.getLong("time_control_p2", 5 * MINUTE);
-    increment[0] = sharedPref.getLong("time_inc_p1", 0);
-    increment[1] = sharedPref.getLong("time_inc_p2", 0);
-    topTime = sharedPref.getLong("curr_time_p1", 5 * MINUTE);
-    bottomTime = sharedPref.getLong("curr_time_p2", 5 * MINUTE);
+    time_default[0] = sharedPref.getLong("time_control_p1", 5 * MINUTE);
+    time_default[1] = sharedPref.getLong("time_control_p2", 5 * MINUTE);
+    comp_default[0] = sharedPref.getLong("time_inc_p1", 0);
+    comp_default[1] = sharedPref.getLong("time_inc_p2", 0);
+    time_top = sharedPref.getLong("curr_time_p1", 5 * MINUTE);
+    time_bot = sharedPref.getLong("curr_time_p2", 5 * MINUTE);
     incrementType = sharedPref.getInt("inc_type", Constants.DELAY);
 
     if(playSounds)

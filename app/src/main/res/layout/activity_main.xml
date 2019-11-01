@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/activity_main"
@@ -14,24 +14,21 @@
   tools:context="jmagine.chessclock.MainActivity">
 
   <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true">
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical">
 
     <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_weight="4">
+      android:layout_weight="5">
 
       <Button
-        android:id="@+id/topButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#222"
-        android:alpha="1"/>
+          android:id="@+id/topButton"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:alpha="1"
+          android:background="#00141e" />
 
       <TextView
         android:id="@+id/topTime"
@@ -181,7 +178,7 @@
     <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_weight="4">
+      android:layout_weight="5">
 
       <LinearLayout
         android:layout_width="wrap_content"
@@ -276,7 +273,7 @@
         android:id="@+id/bottomButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#222"
+        android:background="#00141e"
         android:alpha="1"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -285,4 +282,4 @@
     </RelativeLayout>
 
   </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

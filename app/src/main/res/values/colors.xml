@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <color name="button_inactive">#00141e</color>
+  <color name="button_active">#00cccc</color>
+  <color name="button_flagged">#ff4444</color>
+  <color name="background">#000000</color>
+
+  <!-- Unused stuff-->
   <color name="colorPrimary">#3F51B5</color>
   <color name="colorPrimaryDark">#303F9F</color>
   <color name="colorAccent">#FF4081</color>

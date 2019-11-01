@@ -238,7 +238,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
           playerBottomIncrement = playerTopIncrement;
         }
 
-        //Generate timeControl string and add it to set. add should prevent duplicates
+        //Generate time_default string and add it to set. add should prevent duplicates
         String timeControl = "";
 
         //minutes
@@ -248,7 +248,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         if(((playerTopTime % Constants.MINUTE)) / Constants.SECOND > 0)
           timeControl = timeControl.concat(":" + (playerTopTime % Constants.MINUTE) / Constants.SECOND);
 
-        //increment
+        //comp_default
         timeControl = timeControl.concat(" " + playerTopIncrement / Constants.SECOND + "");
 
         //different times
@@ -262,11 +262,11 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
           if(((playerBottomTime % Constants.MINUTE)) / Constants.SECOND > 0)
             timeControl = timeControl.concat(":" + (playerBottomTime % Constants.MINUTE) / Constants.SECOND);
 
-          //increment
+          //comp_default
           timeControl = timeControl.concat(" " + playerBottomIncrement / Constants.SECOND + "");
         }
 
-        //append increment type
+        //append comp_default type
         switch(incrementType) {
           case Constants.FISCHER:
             timeControl = timeControl.concat(" Fischer");
@@ -400,7 +400,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
       playerBottomIncrement = playerTopIncrement;
     }
 
-    //increment type always last argument
+    //comp_default type always last argument
     switch(timeParts[timeParts.length - 1]) {
       case "Fischer":
         incrementType = Constants.FISCHER;

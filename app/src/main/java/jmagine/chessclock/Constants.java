@@ -10,8 +10,16 @@ public class Constants {
   final static long MINUTE = 60000;
   final static long SECOND = 1000;
 
-  //increment types
+  //comp_default types
   final static int FISCHER = 0;
   final static int DELAY = 1;
   final static int BRONSTEIN = 2;
+
+  enum Comp {
+    FISCHER, DELAY, BRONSTEIN;
+  }
+
+  enum Mode {
+    INIT, PLAY, PAUSE;
+  }
 }

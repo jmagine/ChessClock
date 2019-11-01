@@ -23,6 +23,9 @@ import android.preference.PreferenceManager;
 import java.util.TimerTask;
 import java.util.Timer;
 
+import android.util.Log;
+import java.util.prefs.Preferences;
+
 public class MainActivity extends AppCompatActivity
                           implements View.OnTouchListener, OnSharedPreferenceChangeListener{
 
@@ -65,11 +68,12 @@ public class MainActivity extends AppCompatActivity
   final int PLAYER_BOT = 2;
 
   //clock modes
-  final int MODE_INIT      = 0;
-  final int MODE_PLAY      = 1;
-  final int MODE_PAUSE     = 2;
-  final int MODE_EDIT_TIME = 3;
-  final int MODE_RESET_CNF = 4;
+  final int MODE_UNINIT    = 0;
+  final int MODE_INIT      = 1;
+  final int MODE_PLAY      = 2;
+  final int MODE_PAUSE     = 3;
+  final int MODE_EDIT_TIME = 4;
+  final int MODE_RESET_CNF = 5;
 
   String timeFormat;
   String timeRotation;
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity
   long bronsteinBottomTime;
 
   int turn;               //turn to move
-  int currMode;           //current clock mode
+  int currMode = MODE_UNINIT; //current clock mode
   int displayTimeModeTop;    //HOUR_MIN or MIN_SEC mode
   int displayTimeModeBottom; //HOUR_MIN or MIN_SEC mode
   int incrementType;
@@ -95,6 +99,11 @@ public class MainActivity extends AppCompatActivity
   boolean leadingZero;    //whether to display leading 0
   boolean blinkingColon;  //whether to blink colon
   boolean timeUnits;      //whether to display s or m after time
+
+  //variables under test
+  String lastUItopTime = "";
+  String lastUIbottomTime = "";
+  //int lastUIMode;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +141,6 @@ public class MainActivity extends AppCompatActivity
 
     //Technically works, just find a better way to do it and put it in all entry points in app
     topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
 
     topButton.setOnTouchListener(this);
     bottomButton.setOnTouchListener(this);
@@ -183,10 +191,11 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public boolean onTouch(View v, MotionEvent m) {
-    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
     if(m.getAction() != MotionEvent.ACTION_DOWN)
       return false;
+
+    if(currMode == MODE_PLAY)
+      topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     switch (v.getId()) {
       case R.id.topButton:
@@ -471,7 +480,6 @@ public class MainActivity extends AppCompatActivity
             break;
         }
         */
-
         //TODO clean this
 
         //TODO testing the time string creation optimizations
@@ -504,6 +512,8 @@ public class MainActivity extends AppCompatActivity
           if(time_top > 0 && currMode != MODE_EDIT_TIME)
             bottomFirstFlag.setVisibility(View.VISIBLE);
         }
+
+        lastUIbottomTime = (String) bottomTimeTV.getText();
       }
     });
   }
@@ -600,6 +610,9 @@ public class MainActivity extends AppCompatActivity
   }
 
   public void setMode(int mode) {
+
+    if(mode == currMode)
+      return;
 
     switch(mode) {
       case MODE_INIT:

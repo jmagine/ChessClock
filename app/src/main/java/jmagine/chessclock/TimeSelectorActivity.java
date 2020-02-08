@@ -93,9 +93,14 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_time_selector);
 
+    View decorView = getWindow().getDecorView();
+    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    
     player2TimeSelection = (LinearLayout) findViewById(R.id.player2TimeSelection);
     player1Text = (TextView) findViewById(R.id.player1Text);
     player2Text = (TextView) findViewById(R.id.player2Text);
+
+
 
     separator = (ImageView) findViewById(R.id.separator);
 
@@ -326,14 +331,14 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
       player1Text.setText("Both Times");
       player2TimeSelection.setVisibility(View.GONE);
       player2Text.setVisibility(View.GONE);
-      separator.setVisibility(View.GONE);
+      //separator.setVisibility(View.GONE);
 
     }
     else {
       player1Text.setText("Top Time");
       player2TimeSelection.setVisibility(View.VISIBLE);
       player2Text.setVisibility(View.VISIBLE);
-      separator.setVisibility(View.VISIBLE);
+      //separator.setVisibility(View.VISIBLE);
     }
   }
 
@@ -362,8 +367,14 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
   }
 
   public void removeTimeControl(int position) {
-    timeControlList.remove(position);
+    String timeControl = timeControlList.remove(position);
     timeControlAdapter.notifyDataSetChanged();
+    timeControls.remove(timeControl);
+
+    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    SharedPreferences.Editor editor = sharedPref.edit();
+    editor.putStringSet("time_controls", timeControls);
+    editor.apply();
   }
 
   public void setTimeControl(String timeControl) {

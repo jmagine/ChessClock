@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.List;
 
@@ -125,6 +126,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     getSupportActionBar().setDisplayShowHomeEnabled(true);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    View decorView = getWindow().getDecorView();
+    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     setupActionBar();
   }

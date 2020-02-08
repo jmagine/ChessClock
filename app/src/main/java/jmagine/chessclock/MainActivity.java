@@ -140,7 +140,8 @@ public class MainActivity extends AppCompatActivity
     editTimeButtons[7] = (ImageButton) findViewById(R.id.editTimeBottom2Down);
 
     //Technically works, just find a better way to do it and put it in all entry points in app
-    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    View decorView = getWindow().getDecorView();
+    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     topButton.setOnTouchListener(this);
     bottomButton.setOnTouchListener(this);
@@ -170,32 +171,33 @@ public class MainActivity extends AppCompatActivity
     setMode(MODE_INIT);
 
     //TODO look into real-time alternatives like SystemClock
-    //Update times each 10 ms
+    //Update times each 15 ms
     Timer t = new Timer();
     t.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
         if(turn == PLAYER_TOP) {
-          if(top_comp > 0) top_comp -= 10;
-          else             time_top -= 10;
+          if(top_comp > 0) top_comp -= 50;
+          else             time_top -= 50;
         }
         else if(turn == PLAYER_BOT) {
-          if(bot_comp > 0) bot_comp -= 10;
-          else             time_bot -= 10;
+          if(bot_comp > 0) bot_comp -= 50;
+          else             time_bot -= 50;
         }
 
         updateUI();
       }
-    }, 10, 10);
+    }, 50, 50);
   }
 
   @Override
   public boolean onTouch(View v, MotionEvent m) {
+    View decorView = getWindow().getDecorView();;
     if(m.getAction() != MotionEvent.ACTION_DOWN)
       return false;
 
     if(currMode == MODE_PLAY)
-      topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+      decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     switch (v.getId()) {
       case R.id.topButton:
@@ -392,7 +394,8 @@ public class MainActivity extends AppCompatActivity
   protected void onResume() {
     super.onResume();
 
-    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    View decorView = getWindow().getDecorView();
+    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     mp1 = MediaPlayer.create(this, R.raw.tick);
     mp2 = MediaPlayer.create(this, R.raw.tick);
@@ -410,7 +413,8 @@ public class MainActivity extends AppCompatActivity
   protected void onRestart() {
     super.onRestart();
 
-    topTimeTV.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    View decorView = getWindow().getDecorView();
+    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
     if(mp1 == null)
       mp1 = MediaPlayer.create(this, R.raw.tick);

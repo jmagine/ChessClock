@@ -95,7 +95,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
 
     View decorView = getWindow().getDecorView();
     decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    
+
     player2TimeSelection = (LinearLayout) findViewById(R.id.player2TimeSelection);
     player1Text = (TextView) findViewById(R.id.player1Text);
     player2Text = (TextView) findViewById(R.id.player2Text);

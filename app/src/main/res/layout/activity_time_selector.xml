@@ -117,6 +117,24 @@
               android:text="Bronstein"/>
 
           </RadioGroup>
+
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="Inc Decimal"
+              android:textSize="16dp"/>
+          <EditText
+            android:id="@+id/incDec1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"/>
+
+          <EditText
+            android:id="@+id/incDec2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"/>
+
         </LinearLayout>
 
         <LinearLayout

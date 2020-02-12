@@ -172,7 +172,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     */
 
     //default incrementType
-    incrementType = Constants.FISCHER;
+    incrementType = Const.FISCHER;
 
     //SharedPreferences
     getPreferences();
@@ -231,17 +231,17 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
       case R.id.applyButton:
 
         playerTopTime = 1;
-        playerTopTime += hourPicker1.getValue() * Constants.HOUR;
-        playerTopTime += minPicker1.getValue() * Constants.MINUTE;
-        playerTopTime += secPicker1.getValue() * Constants.SECOND;
-        playerTopIncrement = (long) ((incPicker1.getValue() + Float.valueOf(incDecimal1.getText().toString())) * Constants.SECOND);
+        playerTopTime += hourPicker1.getValue() * Const.HOUR;
+        playerTopTime += minPicker1.getValue() * Const.MINUTE;
+        playerTopTime += secPicker1.getValue() * Const.SECOND;
+        playerTopIncrement = (long) ((incPicker1.getValue() + Float.valueOf(incDecimal1.getText().toString())) * Const.SECOND);
 
         if(enablePlayer2) {
           playerBottomTime = 1;
-          playerBottomTime += hourPicker2.getValue() * Constants.HOUR;
-          playerBottomTime += minPicker2.getValue() * Constants.MINUTE;
-          playerBottomTime += secPicker2.getValue() * Constants.SECOND;
-          playerBottomIncrement = (long) ((incPicker2.getValue() + Float.valueOf(incDecimal2.getText().toString())) * Constants.SECOND);
+          playerBottomTime += hourPicker2.getValue() * Const.HOUR;
+          playerBottomTime += minPicker2.getValue() * Const.MINUTE;
+          playerBottomTime += secPicker2.getValue() * Const.SECOND;
+          playerBottomIncrement = (long) ((incPicker2.getValue() + Float.valueOf(incDecimal2.getText().toString())) * Const.SECOND);
         }
         else {
           playerBottomTime = playerTopTime;
@@ -252,18 +252,18 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         String timeControl = "";
 
         //minutes
-        timeControl = timeControl.concat("" + playerTopTime / Constants.MINUTE);
+        timeControl = timeControl.concat("" + playerTopTime / Const.MINUTE);
 
         //seconds
-        if(((playerTopTime % Constants.MINUTE)) / Constants.SECOND > 0)
-          timeControl = timeControl.concat(":" + (playerTopTime % Constants.MINUTE) / Constants.SECOND);
+        if(((playerTopTime % Const.MINUTE)) / Const.SECOND > 0)
+          timeControl = timeControl.concat(":" + (playerTopTime % Const.MINUTE) / Const.SECOND);
 
         //comp_default
         String topIncrementString;
-        if ((float) playerTopIncrement / Constants.SECOND % 1 == 0)
-          topIncrementString = Long.toString(playerTopIncrement / Constants.SECOND);
+        if ((float) playerTopIncrement / Const.SECOND % 1 == 0)
+          topIncrementString = Long.toString(playerTopIncrement / Const.SECOND);
         else
-          topIncrementString = Float.toString((float) playerTopIncrement / Constants.SECOND);
+          topIncrementString = Float.toString((float) playerTopIncrement / Const.SECOND);
 
         timeControl = timeControl.concat(" " + topIncrementString + "");
 
@@ -272,32 +272,32 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
           timeControl = timeControl.concat(" | ");
 
           //minutes
-          timeControl = timeControl.concat("" + playerBottomTime / Constants.MINUTE);
+          timeControl = timeControl.concat("" + playerBottomTime / Const.MINUTE);
 
           //seconds
-          if(((playerBottomTime % Constants.MINUTE)) / Constants.SECOND > 0)
-            timeControl = timeControl.concat(":" + (playerBottomTime % Constants.MINUTE) / Constants.SECOND);
+          if(((playerBottomTime % Const.MINUTE)) / Const.SECOND > 0)
+            timeControl = timeControl.concat(":" + (playerBottomTime % Const.MINUTE) / Const.SECOND);
 
           //comp_default
 
           String bottomIncrementString;
-          if ((float) playerBottomIncrement / Constants.SECOND % 1 == 0)
-            bottomIncrementString = Long.toString(playerBottomIncrement / Constants.SECOND);
+          if ((float) playerBottomIncrement / Const.SECOND % 1 == 0)
+            bottomIncrementString = Long.toString(playerBottomIncrement / Const.SECOND);
           else
-            bottomIncrementString = Float.toString((float) playerBottomIncrement / Constants.SECOND);
+            bottomIncrementString = Float.toString((float) playerBottomIncrement / Const.SECOND);
 
           timeControl = timeControl.concat(" " + bottomIncrementString + "");
         }
 
         //append comp_default type
         switch(incrementType) {
-          case Constants.FISCHER:
+          case Const.FISCHER:
             timeControl = timeControl.concat(" Fischer");
             break;
-          case Constants.DELAY:
+          case Const.DELAY:
             timeControl = timeControl.concat(" Delay");
             break;
-          case Constants.BRONSTEIN:
+          case Const.BRONSTEIN:
             timeControl = timeControl.concat(" Bronstein");
             break;
         }
@@ -314,7 +314,9 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         editor.putLong("time_inc_p2", playerBottomIncrement);
         editor.putStringSet("time_controls", timeControls);
         editor.putInt("inc_type", incrementType);
-        editor.apply();
+        editor.putLong("moves_p1", 0);
+        editor.putLong("moves_p2", 0);
+        editor.commit();
 
         intent = new Intent(applyButton.getContext(), MainActivity.class);
         startActivityForResult(intent, 0);
@@ -327,13 +329,13 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
         setSameTime(sameTimes.isChecked());
         break;
       case R.id.incFischer:
-        incrementType = Constants.FISCHER;
+        incrementType = Const.FISCHER;
         break;
       case R.id.incDelay:
-        incrementType = Constants.DELAY;
+        incrementType = Const.DELAY;
         break;
       case R.id.incBronstein:
-        incrementType = Constants.BRONSTEIN;
+        incrementType = Const.BRONSTEIN;
         break;
     }
   }
@@ -363,30 +365,30 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
 
   public void getPreferences() {
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    playerTopTime = sharedPref.getLong("time_control_p1", 5 * Constants.MINUTE);
-    playerBottomTime = sharedPref.getLong("time_control_p2", 5 * Constants.MINUTE);
+    playerTopTime = sharedPref.getLong("time_control_p1", 5 * Const.MINUTE);
+    playerBottomTime = sharedPref.getLong("time_control_p2", 5 * Const.MINUTE);
     playerTopIncrement = sharedPref.getLong("time_inc_p1", 0);
     playerBottomIncrement = sharedPref.getLong("time_inc_p2", 0);
-    incrementType = sharedPref.getInt("inc_type", Constants.FISCHER);
+    incrementType = sharedPref.getInt("inc_type", Const.FISCHER);
     Set<String> timeControlsTemp = sharedPref.getStringSet("time_controls", null);
 
     timeControls = new HashSet<String>();
     if(timeControlsTemp != null)
       timeControls.addAll(timeControlsTemp);
 
-    hourPicker1.setValue((int) (playerTopTime / Constants.HOUR));
-    minPicker1.setValue((int) ((playerTopTime % Constants.HOUR) / Constants.MINUTE));
-    secPicker1.setValue((int) ((playerTopTime % Constants.MINUTE) / Constants.SECOND));
-    incPicker1.setValue((int) (playerTopIncrement / Constants.SECOND));
+    hourPicker1.setValue((int) (playerTopTime / Const.HOUR));
+    minPicker1.setValue((int) ((playerTopTime % Const.HOUR) / Const.MINUTE));
+    secPicker1.setValue((int) ((playerTopTime % Const.MINUTE) / Const.SECOND));
+    incPicker1.setValue((int) (playerTopIncrement / Const.SECOND));
 
 
-    hourPicker2.setValue((int) (playerBottomTime / Constants.HOUR));
-    minPicker2.setValue((int) ((playerBottomTime % Constants.HOUR) / Constants.MINUTE));
-    secPicker2.setValue((int) ((playerBottomTime % Constants.MINUTE) / Constants.SECOND));
-    incPicker2.setValue((int) (playerBottomIncrement / Constants.SECOND));
+    hourPicker2.setValue((int) (playerBottomTime /Const.HOUR));
+    minPicker2.setValue((int) ((playerBottomTime % Const.HOUR) / Const.MINUTE));
+    secPicker2.setValue((int) ((playerBottomTime % Const.MINUTE) / Const.SECOND));
+    incPicker2.setValue((int) (playerBottomIncrement / Const.SECOND));
 
-    incDecimal1.setText(Float.toString((float) (playerTopIncrement % Constants.SECOND) / Constants.SECOND));
-    incDecimal2.setText(Float.toString((float) (playerBottomIncrement % Constants.SECOND) / Constants.SECOND));
+    incDecimal1.setText(Float.toString((float) (playerTopIncrement % Const.SECOND) / Const.SECOND));
+    incDecimal2.setText(Float.toString((float) (playerBottomIncrement % Const.SECOND) / Const.SECOND));
   }
 
   public void removeTimeControl(int position) {
@@ -397,7 +399,7 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     SharedPreferences.Editor editor = sharedPref.edit();
     editor.putStringSet("time_controls", timeControls);
-    editor.apply();
+    editor.commit();
   }
 
   public void setTimeControl(String timeControl) {
@@ -409,25 +411,25 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
 
     String[] minSecs = timeParts[0].split(":");
 
-    playerTopTime += Integer.parseInt(minSecs[0]) * Constants.MINUTE;
+    playerTopTime += Integer.parseInt(minSecs[0]) * Const.MINUTE;
 
     if(minSecs.length > 1) {
-      playerTopTime += Integer.parseInt(minSecs[1]) * Constants.SECOND;
+      playerTopTime += Integer.parseInt(minSecs[1]) * Const.SECOND;
     }
 
-    playerTopIncrement = (long) (Float.parseFloat(timeParts[1]) * Constants.SECOND);
+    playerTopIncrement = (long) (Float.parseFloat(timeParts[1]) * Const.SECOND);
 
     //different times
     if(timeParts.length > 3) {
       String[] minSecsBottom = timeParts[3].split(":");
 
-      playerBottomTime += Integer.parseInt(minSecsBottom[0]) * Constants.MINUTE;
+      playerBottomTime += Integer.parseInt(minSecsBottom[0]) * Const.MINUTE;
 
       if(minSecsBottom.length > 1) {
-        playerBottomTime += Integer.parseInt(minSecsBottom[1]) * Constants.SECOND;
+        playerBottomTime += Integer.parseInt(minSecsBottom[1]) * Const.SECOND;
       }
 
-      playerBottomIncrement = (long) (Float.parseFloat(timeParts[4]) * Constants.SECOND);
+      playerBottomIncrement = (long) (Float.parseFloat(timeParts[4]) * Const.SECOND);
     }
     else {
       playerBottomTime = playerTopTime;
@@ -437,13 +439,13 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     //comp_default type always last argument
     switch(timeParts[timeParts.length - 1]) {
       case "Fischer":
-        incrementType = Constants.FISCHER;
+        incrementType = Const.FISCHER;
         break;
       case "Delay":
-        incrementType = Constants.DELAY;
+        incrementType = Const.DELAY;
         break;
       case "Bronstein":
-        incrementType = Constants.BRONSTEIN;
+        incrementType = Const.BRONSTEIN;
         break;
     }
 
@@ -457,6 +459,6 @@ public class TimeSelectorActivity extends AppCompatActivity implements View.OnCl
     editor.putLong("time_inc_p1", playerTopIncrement);
     editor.putLong("time_inc_p2", playerBottomIncrement);
     editor.putInt("inc_type", incrementType);
-    editor.apply();
+    editor.commit();
   }
 }
